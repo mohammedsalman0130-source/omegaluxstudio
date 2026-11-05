@@ -1,0 +1,12 @@
+.lux-comparison{background:#f1eee7;color:#243a32;border-block:1px solid #c8c3b8;scroll-margin-top:75px}
+.lux-comparison [hidden]{display:none!important}
+.lux-intro{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,6vw,7rem);align-items:center}
+.lux-comparison .eyebrow{color:#795330}.lux-comparison h2{margin:12px 0 18px}.lux-comparison h3{font-size:clamp(22px,3vw,32px);margin:0;font-weight:500}
+.lux-comparison p{line-height:1.6;max-width:78ch}.lux-upload{padding:clamp(20px,3vw,36px);background:#fffdf7;border:1px solid #c7c6bb}.lux-upload label{font-size:1.3rem}.lux-upload small{display:block;margin-top:12px;color:#4e625a}
+.lux-upload input{font:inherit;max-width:100%;font-size:.88rem}.lux-upload input::file-selector-button,.lux-comparison button{cursor:pointer;color:#fff;background:#244436;border:1px solid #244436;font:inherit;padding:10px 14px;border-radius:3px}
+#lux-progress:empty{display:none}#lux-progress{margin:24px 0 0}.lux-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.lux-actions h3{margin-right:auto}
+#lux-results{margin-top:38px}.lux-scroll{overflow:auto}.lux-comparison table{width:100%;min-width:710px;border-collapse:collapse;text-align:left;font-size:14px}.lux-comparison th{color:#fff;background:#28473a;font-weight:500}.lux-comparison td,.lux-comparison th{padding:13px 12px;border-bottom:1px solid #cdcfc4}.lux-comparison td small{display:block;color:#4b5e53;margin-top:4px}.lux-comparison td button{background:transparent;color:#264b3c;border:0;text-decoration:underline;text-underline-offset:3px;padding:0;text-align:left}
+.lux-state{display:inline-block;border-radius:3px;padding:4px 8px;font-weight:600;white-space:nowrap;background:#e0e1e5;color:#454955}.lux-state.passed{background:#d7e8d7;color:#235737}.lux-state.slightly-passed{background:#fae8b8;color:#6d4b00}.lux-state.fail{background:#f3d9d5;color:#852f2c}
+.lux-comparison details{margin-top:18px}.lux-comparison details summary{cursor:pointer}#lux-rule{font-size:.85rem}.lux-comparison button:disabled{opacity:.55}
+@media(max-width:700px){.lux-intro{grid-template-columns:1fr}.lux-actions h3{width:100%}}
+@media print{.lux-comparison{display:none!important}}
