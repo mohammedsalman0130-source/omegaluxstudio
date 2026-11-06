@@ -1,6 +1,6 @@
-import {linesFromItems,extractReport,makeRoomMatcher,assess,legend} from './engine.mjs';
-import {buildStandards} from './standards.mjs';
-import {pdfReport,workbookReport} from './reports.mjs';
+import {linesFromItems,extractReport,makeRoomMatcher,assess,legend} from './engine.mjs?v=20261106';
+import {buildStandards} from './standards.mjs?v=20261106';
+import {pdfReport,workbookReport} from './reports.mjs?v=20261106';
 
 const el=id=>document.getElementById('lux-'+id);
 const standards=buildStandards(window), refs=new Map(standards.map(s=>[s.id,s]));
@@ -55,7 +55,12 @@ async function analyse(file){
     const extracted=extractReport(pages);
     rows=extracted.rows;warnings=extracted.warnings;
     if(scanPages.length)warnings.push('Pages with no readable text: '+scanPages.join(', ')+'. Use a text-based DIALux PDF to include any tables on these pages.');
-    for(const r of rows)r.standardId=matchRoom(r.room);
+    for (const r of rows) {
+      const match = matchRoom.details(r.room);
+      r.standardId = match.standardId;
+      r.comparisonNote = match.note;
+      r.comparisonMethod = match.method;
+    }
     el('notes').hidden=!warnings.length;el('notes').querySelector('ul').replaceChildren(...warnings.map(w=>textNode('li',w)));
     if(!rows.length){message('No eligible working-plane rows found. Export a text-based DIALux report with Calculation objects / Light scene 1 and the Working planes table enabled.');return}
     message(filename+' · '+extracted.sources.length+' calculation-object page'+(extracted.sources.length===1?'':'s')+' included.');
@@ -70,10 +75,12 @@ function render(){
     counts.set(status,(counts.get(status)||0)+1);
     const cell=(text='')=>{const td=textNode('td',text);tr.append(td);return td};
     cell(r.room).append(textNode('small',[r.floor,r.index,'PDF p. '+r.page].filter(Boolean).join(' · ')));
-    cell(s?.area||'No matching guide entry').append(textNode('small',s?s.edition+' · '+s.ref:'No comparable target available'));
+    const referenceCell = cell(s ? s.industry + ' / ' + s.area : 'No matching guide entry');
+    referenceCell.append(textNode('small',s?s.edition+' · '+s.ref:'No comparable target available'));
+    if (r.comparisonNote) referenceCell.append(textNode('small',r.comparisonNote));
     const compatible=s&&!s.reviewOnly&&!s.incompatible;
     cell(fmt(r.avg)+' / '+fmt(compatible?s.lux:null));cell(fmt(r.u)+' / '+fmt(compatible?s.uniformity:null));
-    const badge=textNode('span',status);badge.className='lux-state '+status.toLowerCase().replaceAll(' ','-');cell().append(badge);frag.append(tr);
+    const badge=textNode('span',status);badge.className='lux-state '+status.toLowerCase().replace(/[^a-z]+/g,'-');cell().append(badge);frag.append(tr);
   });
   el('rows').replaceChildren(frag);el('summary').textContent=rows.length+' working planes · '+[...counts].map(([key,n])=>n+' '+key.toLowerCase()).join(' · ');
 }

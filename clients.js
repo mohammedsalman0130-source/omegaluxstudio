@@ -9,7 +9,7 @@
   const toggle = section.querySelector('[data-partner-pause]');
   const caption = section.querySelector('.partner-current');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  let paused = reduced.matches, visible = true, offset = 0, cycle = 0, last = 0, frame = 0, active = null;
+  let paused = reduced.matches, visible = !('IntersectionObserver' in window), offset = 0, cycle = 0, last = 0, frame = 0, active = null;
   // Two identical copies make the right-to-left loop seamless at every viewport width.
   for (let copy = 0; copy < 2; copy++) originals.forEach(item => {
     const clone = item.cloneNode(true);
@@ -53,7 +53,7 @@
   reduced.addEventListener('change', () => { paused = reduced.matches; sync(); });
   document.addEventListener('visibilitychange', sync);
   new ResizeObserver(measure).observe(viewport);
-  if ('IntersectionObserver' in window) new IntersectionObserver(entries => { visible = entries[0].isIntersecting; sync(); }, { rootMargin: '100px' }).observe(section);
+  if ('IntersectionObserver' in window) new IntersectionObserver(entries => { visible = entries[0].isIntersecting; sync(); }, { threshold: 0.1 }).observe(section);
   section.querySelectorAll('[data-partner-step]').forEach(button => button.addEventListener('click', () => {
     paused = true;
     const step = items[1].offsetLeft - items[0].offsetLeft;

@@ -1,10 +1,11 @@
-import {assess,legend} from './engine.mjs';
+import {assess,legend} from './engine.mjs?v=20261106';
 const title='Lux comparison';
 const scope='DIALux working-plane average illuminance and uniformity are compared with the website standards matched by room use.';
 const columns=['Storey','Working plane','Index','PDF page','Applicable reference task','Average lx achieved','Average lx required','U0 achieved','U0 required','Minimum lx','Maximum lx','Status'];
-const shades={'Passed':'D6EADC','Slightly passed':'F8E8BE','Fail':'F1D8D4','Not assessed':'E3E5E7'};
-const taskText=s=>s?[s.area,s.sourceReference].join('\n'):'No matching guide entry';
-const values=(r,s)=>[r.floor||'—',r.room,r.index||'—',r.page,taskText(s),r.avg,s?.lux,r.u,s?.uniformity,r.min,r.max,assess(r,s)];
+const shades={'Passed':'D6EADC','Slightly passed':'F8E8BE','Fail':'F1D8D4','Not assessed':'E3E5E7',
+  'Passed (provisional)':'E3E5E7','Slightly passed (provisional)':'E3E5E7','Fail (provisional)':'E3E5E7'};
+const taskText=(s,r)=>s?[s.industry+' / '+s.area,s.sourceReference,r.comparisonNote].filter(Boolean).join('\n'):'No matching guide entry';
+const values=(r,s)=>[r.floor||'—',r.room,r.index||'—',r.page,taskText(s,r),r.avg,s?.lux,r.u,s?.uniformity,r.min,r.max,assess(r,s)];
 const conditional=s=>s?.incompatible||s?.reviewOnly;
 function line(r,refs){
   const s=refs.get(r.standardId),row=values(r,s);
@@ -53,6 +54,7 @@ export function workbookReport({filename,rows,refs,logo,warnings=[]},ExcelJS){
     row.height=Math.max(60,Math.ceil(v[4].length/53)*17+24,Math.ceil(r.room.length/26)*16+12);
     row.alignment={vertical:'middle',wrapText:true};
     row.getCell(12).value={formula:`IF(OR(COUNT(F${n}:I${n})<4,F${n}<0,H${n}<0,H${n}>1,AND(ISNUMBER(J${n}),J${n}>F${n}),AND(ISNUMBER(K${n}),K${n}<F${n})),"Not assessed",IF(OR(F${n}<G${n},H${n}<I${n}),"Fail",IF(OR(F${n}<=G${n}*1.05+1E-9,H${n}<=I${n}*1.05+1E-9),"Slightly passed","Passed")))`,result:v[11]};
+    if (r.comparisonMethod === "provisional" && v[11] !== "Not assessed") row.getCell(12).value = {formula:row.getCell(12).value.formula + ' & " (provisional)"',result:v[11]};
   }
   const last=ws.rowCount;
   ws.autoFilter='A5:L'+last;

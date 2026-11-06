@@ -1,3 +1,4 @@
+import {roomAliases} from './room-aliases.mjs';
 // Keep the PDF's coordinates: extraction order alone cannot distinguish U0 from g2.
 const tidy = text => String(text ?? '').normalize('NFKC').replace(/\s+/g, ' ').trim();
 const normalized = text => tidy(text).toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
@@ -190,47 +191,96 @@ function keywords(name){
   return new Set(normalized(name).split(' ').filter(w=>w.length>1&&!genericWords.has(w)&&!/^\d+$/.test(w))
     .map(w=>w.endsWith('ies')?w.slice(0,-3)+'y':w.length>3&&w.endsWith('s')?w.slice(0,-1):w));
 }
-export function makeRoomMatcher(standards){
-  const refs=new Map(),exact=new Map(),results=new Map();
-  const candidates=standards.map(s=>{
-    if(s.family==='sll'&&!refs.has(s.ref))refs.set(s.ref,s);
-    const name=normalized(s.area);
-    if(!exact.has(name))exact.set(name,[]);
-    exact.get(name).push(s);
-    return {standard:s,words:keywords(s.area),context:keywords(s.industry)};
+// Ignore drawing identifiers while keeping complete words and compound abbreviations.
+function roomName(value) {
+  return normalized(tidy(value)
+    .replace(/\b(?:[a-z]\.){2,}[a-z]?\.?/gi, word => word.replaceAll('.', ''))
+    .replace(/([a-z])(?=\d)|(?<=\d)([a-z])/gi, '$1$2 '))
+    .replace(/\bworking planes?\b/g, ' ')
+    .replace(/\b(?:\d+[a-z]?|gf|ff|bf|b\d+|l\d+|wp\d+|ground floor|first floor)\b/g, ' ')
+    .replace(/\s+/g, ' ').trim();
+}
+export function makeRoomMatcher(standards) {
+  const refs = new Map(), exact = new Map(), results = new Map();
+  // The automatic DIALux comparison uses the SLL Code; other manuals remain searchable in the guide.
+  const candidates = standards.filter(s => s.family === 'sll').map(standard => {
+    if (!refs.has(standard.ref)) refs.set(standard.ref, standard);
+    const name = roomName(standard.area);
+    if (!exact.has(name)) exact.set(name, []);
+    exact.get(name).push(standard);
+    return {standard, words:keywords(standard.area), context:keywords(standard.industry)};
   });
-  function select(room){
-    const name=normalized(room);
-    const direct=exact.get(name)||[];
-    if(direct.length===1)return direct[0].id;
-    const compact=name.replace(/\b(?:g f|f f|b f|ground floor|first floor)\b/g,' ').trim();
-    const rule=usageRules.find(([re])=>re.test(compact));
-    if(rule&&refs.has(rule[1]))return refs.get(rule[1]).id;
-    const terms=keywords(compact);
-    if(!terms.size)return '';
-    let best=null,score=0,tied=false;
-    for(const {standard,words,context} of candidates){
-      const shared=[...terms].filter(t=>words.has(t)).length;
-      if(!shared)continue;
-      const coverage=shared/terms.size,precision=shared/words.size;
-      if(coverage<.5||shared===1&&(coverage<1||precision<.4))continue;
-      const points=2*coverage+precision+.25*[...terms].filter(t=>context.has(t)).length;
-      if(points>score){best=standard;score=points;tied=false}
-      else if(points===score&&(standard.family!==best.family||standard.lux!==best.lux||standard.uniformity!==best.uniformity))tied=true;
-    }
-    return !tied&&best?best.id:'';
+  const names = roomAliases.flatMap(entry => {
+    const expanded = [entry.name, ...entry.name.split(' / ')];
+    return [...entry.aliases, ...expanded].map(label => ({
+      entry, label:roomName(label), expanded:expanded.includes(label)
+    }));
+  }).filter(item => item.label && (!item.expanded || !genericWords.has(item.label)))
+    .sort((a, b) => b.label.length - a.label.length || Number(a.expanded) - Number(b.expanded));
+  const resolved = (standard, note = '', method = 'usage') => ({
+    standardId:standard?.id || '', note, method
+  });
+  function fromAlias(item) {
+    const standard = refs.get(item.entry.ref);
+    if (!standard) return null;
+    const basis = item.entry.analogous
+      ? 'Analogous SLL task benchmark. Status applies to the selected task; applicability to this space is assumed.'
+      : 'SLL task selected from the supplied room-name crosswalk.';
+    return resolved(standard, item.entry.name + '. ' + basis, 'abbreviation');
   }
-  return room=>{
-    const key=normalized(room);
-    if(!results.has(key))results.set(key,select(key));
+  function select(room) {
+    const name = roomName(room);
+    const direct = exact.get(name) || [];
+    if (direct.length === 1) return resolved(direct[0], '', 'exact');
+    const exactAlias = names.find(item => item.label === name);
+    if (exactAlias) {
+      const match = fromAlias(exactAlias);
+      if (match) return match;
+    }
+    // A lobby serving toilets is circulation, and a patient's bathroom has its own task.
+    const contextual = usageRules.slice(0, 4).find(([re]) => re.test(name));
+    if (contextual && refs.has(contextual[1])) return resolved(refs.get(contextual[1]));
+    const padded = ' ' + name + ' ';
+    const alias = names.find(item => padded.includes(' ' + item.label + ' '));
+    if (alias) {
+      const match = fromAlias(alias);
+      if (match) return match;
+    }
+    const rule = usageRules.find(([re]) => re.test(name));
+    if (rule && refs.has(rule[1])) return resolved(refs.get(rule[1]));
+    const terms = keywords(name);
+    let best = null, score = 0, tied = false;
+    for (const {standard, words, context} of candidates) {
+      const shared = [...terms].filter(t => words.has(t)).length;
+      if (!shared || !Number.isFinite(standard.lux) || !Number.isFinite(standard.uniformity)) continue;
+      const coverage = shared / terms.size, precision = shared / words.size;
+      if (coverage < .5 || shared === 1 && (coverage < 1 || precision < .4)) continue;
+      const points = 2 * coverage + precision + .25 * [...terms].filter(t => context.has(t)).length;
+      if (points > score) { best = standard; score = points; tied = false; }
+      else if (points === score && (standard.lux !== best.lux || standard.uniformity !== best.uniformity)) tied = true;
+    }
+    if (!tied && best) return resolved(best, 'Automatically matched to a similar SLL task by room name.', 'similar');
+    // Preserve every extracted working plane. An unknown use gets a disclosed numerical
+    // benchmark, never an invented room-specific SLL requirement.
+    return resolved(refs.get('3.6.1'),
+      'Provisional circulation benchmark: room use could not be identified. The comparison is against SLL corridors/circulation only; project-specific compliance is undetermined.',
+      'provisional');
+  }
+  function details(room) {
+    const key = roomName(room);
+    if (!results.has(key)) results.set(key, select(room));
     return results.get(key);
-  };
+  }
+  const match = room => details(room).standardId;
+  match.details = details;
+  return match;
 }
 export const legend='Slightly passed means both minimums are met and either value is within 5% of its target, including equality. This margin is an OMEGALUX reporting convention.';
 export function assess(row, standard){
   if(!standard)return 'Not assessed';
   if(standard.incompatible||standard.reviewOnly||(!Number.isFinite(standard.lux))||!Number.isFinite(standard.uniformity))return 'Not assessed';
   if(row.avg==null||row.u==null||row.u<0||row.u>1||row.avg<0||row.min!=null&&row.min>row.avg||row.max!=null&&row.max<row.avg)return 'Not assessed';
-  if(row.avg<standard.lux||row.u<standard.uniformity)return 'Fail';
-  return row.avg<=standard.lux*1.05+1e-9||row.u<=standard.uniformity*1.05+1e-9?'Slightly passed':'Passed';
+  const status = row.avg<standard.lux||row.u<standard.uniformity ? 'Fail'
+    : row.avg<=standard.lux*1.05+1e-9||row.u<=standard.uniformity*1.05+1e-9 ? 'Slightly passed' : 'Passed';
+  return row.comparisonMethod === 'provisional' ? status + ' (provisional)' : status;
 }

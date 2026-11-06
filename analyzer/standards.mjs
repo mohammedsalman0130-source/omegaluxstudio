@@ -1,5 +1,5 @@
 // Read-only view of the website's canonical standards; no copied recommendation database.
-import {number} from './engine.mjs';
+import {number} from './engine.mjs?v=20261106';
 export const editions={sll:'SLL Code for Lighting 2022',lg4:'SLL Lighting Guide 4: Sports Lighting, October 2006',adm:'Abu Dhabi Lighting Manual, Version 2.0, September 2020'};
 export function buildStandards({SLL_ROWS=[],LG4_AREAS=[],ADM_AREAS=[]}){
  const rows=SLL_ROWS.map(s=>({...s,family:'sll',edition:editions.sll,sourceReference:`${editions.sll}, section 3.2, Table ${s.table}, Ref ${s.ref}, printed p${s.page} (PDF p${s.pdf_page})`}));
