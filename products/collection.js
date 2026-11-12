@@ -1,4 +1,13 @@
 'use strict';
+function applyStudioNavigation(){
+  const header=document.querySelector('header.mast');
+  if(!header)return;
+  header.className='mast site-mast';
+  header.innerHTML='<a class="brand original-brand" href="/" aria-label="OMEGALUX Studio home"><img src="/assets/studio-logo.png" alt="OMEGALUX Studio"></a><button class="site-menu-toggle" type="button" aria-expanded="false" aria-controls="site-main-nav">Menu <span aria-hidden="true">☰</span></button><nav id="site-main-nav" aria-label="Main navigation"><a href="/">Home</a><a href="/expertise.html">About Us</a><a href="/approach.html">Our approach</a><a class="nav-current" href="/products/">Products</a><a href="/recommendations.html">Lighting guide</a><a href="/blog.html">Blog</a><a class="nav-cta" href="/contact.html">Let’s talk <span aria-hidden="true">↗</span></a></nav>';
+  const toggle=header.querySelector('.site-menu-toggle');
+  toggle.addEventListener('click',()=>{const open=toggle.getAttribute('aria-expanded')!=='true';toggle.setAttribute('aria-expanded',String(open));header.classList.toggle('nav-open',open)});
+}
+applyStudioNavigation();
 const element = id => document.getElementById(id);
 const payload = element('page-data');
 const data = payload ? JSON.parse(payload.textContent) : null;
