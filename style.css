@@ -6,3 +6,6 @@
 
 /* Original supplied artwork in the shared site header and footer. */
 header{height:116px}.original-brand{display:block;flex:0 0 auto;line-height:0}.original-brand img{display:block;width:172px;height:auto;object-fit:contain}footer .original-brand img{width:184px}.hero{height:calc(100svh - 116px)}@media(max-width:800px){header{height:84px}.original-brand img{width:124px}.hero{height:calc(90svh - 84px)}footer .original-brand img{width:160px}}@media(max-width:360px){.original-brand img{width:108px}nav{gap:9px}.nav-cta{padding:10px}}
+
+
+@media(min-width:801px){header nav{gap:clamp(10px,1.5vw,26px)}}

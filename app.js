@@ -1,3 +1,5 @@
+// Keep the portfolio next to Products throughout the main website.
+for(const nav of document.querySelectorAll('header nav')){const products=[...nav.querySelectorAll('a')].find(a=>a.textContent.trim()==='Products');if(products&&!nav.querySelector('a[href="/projects/"]')){const link=document.createElement('a');link.href='/projects/';link.textContent='Projects';products.after(link);}}
 const $=s=>document.querySelector(s);
 const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)');
 const menu=$('.menu-toggle');
@@ -14,3 +16,4 @@ let scrollPending=false;
 function syncJourneys(){document.querySelectorAll('.journey').forEach(j=>{const steps=[...j.querySelectorAll('.journey-step')];let nearest=0,dist=Infinity;steps.forEach((step,i)=>{const r=step.getBoundingClientRect();const d=Math.abs(r.top+r.height/2-innerHeight*.55);if(d<dist){dist=d;nearest=i}});j.dataset.active=nearest;steps.forEach((s,i)=>s.classList.toggle('active',i===nearest));j.querySelector('.phase-count').textContent=`0${nearest+1} / 06`;j.querySelector('.phase-label').textContent=phaseNames[j.id][nearest];j.querySelector('.journey-progress i').style.width=`${(nearest+1)/6*100}%`});scrollPending=false}
 if($('.journey')){addEventListener('scroll',()=>{if(!scrollPending){scrollPending=true;requestAnimationFrame(syncJourneys)}},{passive:true});addEventListener('resize',syncJourneys);syncJourneys()}
 document.querySelectorAll('[data-service]').forEach(a=>a.href='contact.html?service='+encodeURIComponent(a.dataset.service));
+
