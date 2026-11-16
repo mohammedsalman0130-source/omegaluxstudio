@@ -88,3 +88,8 @@ figure.story-hero img {display:block;width:100%;height:100%;object-fit:cover;obj
 .story-text p {margin:.8rem 0 1.15rem}.story-text ul {padding-left:1.4rem}.story-text a,.story-heading>a{text-decoration:underline;text-underline-offset:3px}
 .story-sources {border-top:1px solid #c9c5bb;margin-top:32px;font-size:.93rem}.story-text .story-sources h2{font-size:1.4rem}
 @media(max-width:700px){figure.story-hero{aspect-ratio:4/3;margin:18px auto 30px}.story-hero{aspect-ratio:4/3}.studio-youform iframe{height:clamp(440px,76svh,610px)}.story-heading,.story-text{padding:32px 6%}}
+
+
+/* Let inline article illustrations expand to the article width without dark gutters. */
+.story-text figure.journal-image{width:100%;max-width:none;aspect-ratio:auto;background:transparent}
+.story-text figure.journal-image>img{display:block;width:100%;max-width:none;height:auto;object-fit:contain}
