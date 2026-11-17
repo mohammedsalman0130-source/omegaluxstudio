@@ -1,5 +1,7 @@
 // Keep the portfolio next to Products throughout the main website.
 for(const nav of document.querySelectorAll('header nav')){const products=[...nav.querySelectorAll('a')].find(a=>a.textContent.trim()==='Products');if(products&&!nav.querySelector('a[href="/projects/"]')){const link=document.createElement('a');link.href='/projects/';link.textContent='Projects';products.after(link);}}
+const BUSINESS_EMAIL='info@omegaluxstudio.com';
+const DESIGN_EMAIL='design@omegaluxstudio.com';
 const $=s=>document.querySelector(s);
 const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)');
 const menu=$('.menu-toggle');
@@ -15,5 +17,13 @@ const phaseNames={design:['BRIEF','CONCEPT','VALIDATE','DETAIL','APPROVE','HANDO
 let scrollPending=false;
 function syncJourneys(){document.querySelectorAll('.journey').forEach(j=>{const steps=[...j.querySelectorAll('.journey-step')];let nearest=0,dist=Infinity;steps.forEach((step,i)=>{const r=step.getBoundingClientRect();const d=Math.abs(r.top+r.height/2-innerHeight*.55);if(d<dist){dist=d;nearest=i}});j.dataset.active=nearest;steps.forEach((s,i)=>s.classList.toggle('active',i===nearest));j.querySelector('.phase-count').textContent=`0${nearest+1} / 06`;j.querySelector('.phase-label').textContent=phaseNames[j.id][nearest];j.querySelector('.journey-progress i').style.width=`${(nearest+1)/6*100}%`});scrollPending=false}
 if($('.journey')){addEventListener('scroll',()=>{if(!scrollPending){scrollPending=true;requestAnimationFrame(syncJourneys)}},{passive:true});addEventListener('resize',syncJourneys);syncJourneys()}
+const form=$('#enquiry');
+if(form){const dialog=$('#notice'),draft=$('#draft');$('#close').onclick=()=>dialog.close();dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close()}});form.addEventListener('change',()=>{form.elements.phone.required=form.elements.preference.value==='Callback'});
+function compose(body){if(BUSINESS_EMAIL){location.href='mailto:'+(form.elements.service.value==='Lighting design'?DESIGN_EMAIL:BUSINESS_EMAIL)+'?subject='+encodeURIComponent('Project enquiry — OMEGALUX Studio')+'&body='+encodeURIComponent(body);$('#form-status').textContent='Thank you. Your email app will open with your enquiry. Send it there to complete your request.'}else{draft.value=body;$('#copy').textContent='Copy enquiry ↗';dialog.showModal()}}
+form.onsubmit=e=>{e.preventDefault();const d=new FormData(form);compose(`Project enquiry\n\nName: ${d.get('name')}\nCompany: ${d.get('company')}\nEmail: ${d.get('email')}\nPhone: ${d.get('phone')||'Not provided'}\nRole: ${d.get('role')}\nService: ${d.get('service')}\nPreferred contact: ${d.get('preference')}\n\nProject details:\n${d.get('message')}`)};
+$('#email').onclick=()=>compose('Hello OMEGALUX Studio,\n\nI would like to discuss lighting support for my project.\n\nProject:\nRequired services:\nContact details:');$('#copy').onclick=async()=>{try{await navigator.clipboard.writeText(draft.value);$('#copy').textContent='Copied ✓'}catch{draft.select();$('#copy').textContent='Select and copy the text above'}};
+if(BUSINESS_EMAIL){form.querySelector('button[type=submit]').innerHTML='Send enquiry by email <span>↗</span>';$('#form-status').textContent='Opens your email app. Your details are shared only when you send.'}
+const params=new URLSearchParams(location.search);if(params.get('brief')){form.elements.message.value=params.get('brief');$('#service').value='Lighting design'}if(['Lighting design','Lighting supply','Design & supply'].includes(params.get('service')))$('#service').value=params.get('service');}
+
 document.querySelectorAll('[data-service]').forEach(a=>a.href='contact.html?service='+encodeURIComponent(a.dataset.service));
 
