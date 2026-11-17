@@ -44,6 +44,8 @@
   place-items: center;
 }
 #ol-floating-social-panel .ol-social-icon svg { display: block; }
+/* Render the LinkedIn mark as a clean white, filled "in", not a distorted outline. */
+#ol-floating-social-panel .ol-social-linkedin .ol-social-icon svg { fill: #fff !important; stroke: none !important; }
 #ol-floating-social-panel .ol-social-label {
   box-sizing: border-box;
   display: block;
