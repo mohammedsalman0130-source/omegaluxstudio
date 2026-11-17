@@ -49,3 +49,13 @@ body{font-size:15px}
 @media(max-width:800px){.site-mast{height:88px;min-height:88px}.site-mast .brand img{width:124px}.site-mast nav{padding:18px var(--site-gutter) 22px}.site-menu-toggle{padding:12px 15px}.project-collection{padding-top:50px;padding-bottom:60px}.detail{padding-top:32px;padding-bottom:60px}.landingHero{height:420px}}
 @media(max-width:560px){.grid{grid-template-columns:1fr;gap:30px}.landingHero{height:400px}.landingCopy h1{font-size:44px}.landingCopy .eyebrow{line-height:1.7;letter-spacing:.18em}.landingCopy p{font-size:10px}.sectionHead{align-items:start;flex-direction:column;gap:8px}.sectionHead span{text-align:left}.heroCopy h1{font-size:34px}.viewerTop{align-items:start;flex-direction:column}.viewerNav{width:100%;justify-content:space-between}.viewerNav button{min-height:44px}.foot{gap:24px;line-height:1.6;flex-wrap:wrap}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important;animation:none!important}}
+
+/* Shared OMEGALUX Studio footer used on every main website section. */
+.studio-site-footer{width:100%;padding:40px 6%;display:flex;align-items:center;justify-content:space-between;gap:30px;background:#102322;color:#eee9df;font:15px/1.55 'DM Sans',Arial,sans-serif}
+.studio-site-footer .original-brand{display:block;flex:0 0 auto;line-height:0}
+.studio-site-footer .original-brand img{display:block;width:184px;height:auto;object-fit:contain}
+.studio-site-footer .footer-contact{display:flex;flex-direction:column;gap:8px;font-size:11px;line-height:1.5}
+.studio-site-footer .footer-contact p{margin:0 0 5px}
+.studio-site-footer .footer-contact>span,.studio-site-footer>span{color:#acb5af;font-size:10px}
+.studio-site-footer .footer-contact a:hover{text-decoration:underline;text-underline-offset:3px}
+@media(max-width:800px){.studio-site-footer{align-items:flex-start;flex-direction:column;gap:10px}.studio-site-footer .original-brand img{width:160px}.studio-site-footer .footer-contact{font-size:12px}.studio-site-footer .footer-contact p{margin:0}}
