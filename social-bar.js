@@ -19,11 +19,22 @@
     if (document.getElementById('ol-floating-social-panel')) return;
     const stylesheet = document.createElement('link');
     stylesheet.rel = 'stylesheet';
-    stylesheet.href = '/social-bar.css?v=20261117-mobile-right-fix';
+    stylesheet.href = '/social-bar.css?v=20261117-mobile-isolation-v2';
     document.head.appendChild(stylesheet);
 
-    const panel = document.createElement('nav');
+    // Do not use <nav>: the site's mobile navigation styles target every nav tag.
+    const panel = document.createElement('div');
     panel.id = 'ol-floating-social-panel';
+    panel.setAttribute('role', 'navigation');
+    // Inline safeguards keep it on the right, even if an older site stylesheet is cached.
+    panel.style.setProperty('position', 'fixed', 'important');
+    panel.style.setProperty('right', '0px', 'important');
+    panel.style.setProperty('left', 'auto', 'important');
+    panel.style.setProperty('width', 'max-content', 'important');
+    panel.style.setProperty('margin', '0', 'important');
+    panel.style.setProperty('padding', '0', 'important');
+    panel.style.setProperty('background', 'transparent', 'important');
+    panel.style.setProperty('box-shadow', 'none', 'important');
     panel.setAttribute('aria-label', 'OMEGALUX Studio social links');
 
     const links = [
