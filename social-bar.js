@@ -4,9 +4,8 @@
   if (window.__omegaluxFloatingSocialLoaded) return;
   window.__omegaluxFloatingSocialLoaded = true;
 
-  // Set this only after confirming the official company Instagram account URL.
-  // Until then the Instagram tile remains visible but is not a misleading link.
-  const INSTAGRAM_PROFILE_URL = '';
+  // Official OMEGALUX Studio Instagram profile.
+  const INSTAGRAM_PROFILE_URL = 'https://www.instagram.com/omegaluxstudio/';
   // Uses the published business telephone number: +971 58 117 8675.
   const WHATSAPP_CHAT_URL = 'https://wa.me/971581178675?text=Hello%20OMEGALUX%20Studio%2C%20I%20would%20like%20to%20enquire%20about%20your%20lighting%20design%20and%20supply%20services.';
 
