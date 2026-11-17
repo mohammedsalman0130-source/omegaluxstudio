@@ -62,3 +62,10 @@ body{font-size:15px}
 
 /* Keep every Projects footer text element white like the main site footer. */
 .studio-site-footer,.studio-site-footer *{color:#fff}
+
+/* Explicitly match the main website header font and logo dimensions. */
+.site-mast,.site-mast nav a{font-family:'DM Sans',Arial,sans-serif}
+.site-mast .brand img{width:172px;height:auto;object-fit:contain}
+.site-mast nav a{font-size:13px;font-weight:400;line-height:1.25}
+@media(min-width:801px) and (max-width:1050px){.site-mast .brand img{width:140px}.site-mast nav a{font-size:11px}}
+@media(max-width:800px){.site-mast .brand img{width:124px}}
