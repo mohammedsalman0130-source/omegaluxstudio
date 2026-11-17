@@ -59,3 +59,6 @@ body{font-size:15px}
 .studio-site-footer .footer-contact>span,.studio-site-footer>span{color:#acb5af;font-size:10px}
 .studio-site-footer .footer-contact a:hover{text-decoration:underline;text-underline-offset:3px}
 @media(max-width:800px){.studio-site-footer{align-items:flex-start;flex-direction:column;gap:10px}.studio-site-footer .original-brand img{width:160px}.studio-site-footer .footer-contact{font-size:12px}.studio-site-footer .footer-contact p{margin:0}}
+
+/* Keep every Projects footer text element white like the main site footer. */
+.studio-site-footer,.studio-site-footer *{color:#fff}
