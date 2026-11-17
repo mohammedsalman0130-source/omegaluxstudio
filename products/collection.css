@@ -41,3 +41,18 @@ footer.studio-site-footer .footer-contact p{margin:0 0 5px}
 footer.studio-site-footer .footer-contact>span,footer.studio-site-footer>span{color:#acb5af;font-size:10px}
 footer.studio-site-footer .footer-contact a:hover{text-decoration:underline;text-underline-offset:3px}
 @media(max-width:800px){footer.studio-site-footer{align-items:flex-start;flex-direction:column;gap:10px}footer.studio-site-footer .original-brand img{width:160px}footer.studio-site-footer .footer-contact{font-size:12px}footer.studio-site-footer .footer-contact p{margin:0}}
+
+
+/* Match the shared OMEGALUX header geometry across Products and Projects. */
+:root{--site-gutter:6%}
+.mast{height:116px;min-height:116px;padding:0 var(--site-gutter);gap:28px;background:#102322}
+.mast .brand{flex:0 0 auto;line-height:0}
+.mast .brand img{width:172px;height:auto}
+.mast nav{gap:clamp(10px,1.5vw,26px)}
+.mast nav a{font-size:13px;white-space:nowrap}
+.head-end{gap:16px;flex:0 0 auto}
+.talk{padding:12px 17px}
+@media(min-width:1600px){:root{--site-gutter:max(6%,calc((100vw - 1500px)/2))}}
+@media(min-width:801px) and (max-width:1050px){.mast{gap:16px}.mast .brand img{width:140px}.mast nav{gap:12px}.mast nav a{font-size:11px}.head-end{gap:6px}.talk{padding:10px 12px}.talk span{gap:8px}}
+@media(max-width:800px){.mast{height:88px;min-height:88px;padding:0 var(--site-gutter)}.mast .brand img{width:124px}}
+@media(max-width:580px){.mast{height:88px;min-height:88px}.brand img{width:124px;height:auto}}
