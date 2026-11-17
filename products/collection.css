@@ -56,3 +56,12 @@ footer.studio-site-footer .footer-contact a:hover{text-decoration:underline;text
 @media(min-width:801px) and (max-width:1050px){.mast{gap:16px}.mast .brand img{width:140px}.mast nav{gap:12px}.mast nav a{font-size:11px}.head-end{gap:6px}.talk{padding:10px 12px}.talk span{gap:8px}}
 @media(max-width:800px){.mast{height:88px;min-height:88px;padding:0 var(--site-gutter)}.mast .brand img{width:124px}}
 @media(max-width:580px){.mast{height:88px;min-height:88px}.brand img{width:124px;height:auto}}
+
+
+/* Exact shared header type and logo artwork used by the main site. */
+body .mast{font-family:'DM Sans',Arial,sans-serif}
+body .mast .brand img{content:url('/assets/studio-logo.png');display:block;width:172px;height:auto;object-fit:contain}
+body .mast nav a,body .mast .talk{font-family:'DM Sans',Arial,sans-serif;font-size:13px;font-weight:400;line-height:1.25}
+@media(min-width:801px) and (max-width:1050px){body .mast .brand img{width:140px}body .mast nav a,body .mast .talk{font-size:11px}}
+@media(max-width:800px){body .mast .brand img{width:124px}}
+@media(max-width:580px){body .mast .brand img{width:124px}}
