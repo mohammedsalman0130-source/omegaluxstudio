@@ -1,3 +1,5 @@
+/* Shared, non-invasive social links: Instagram + WhatsApp */
+(()=>{if(!document.querySelector('script[data-ol-social]')){const s=document.createElement('script');s.dataset.olSocial='true';s.src='/social-bar.js?v=20261117';document.head.appendChild(s);}})();
 'use strict';
 function applyStudioNavigation(){
   const header=document.querySelector('header.mast');
