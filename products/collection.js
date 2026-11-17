@@ -8,6 +8,13 @@ function applyStudioNavigation(){
   toggle.addEventListener('click',()=>{const open=toggle.getAttribute('aria-expanded')!=='true';toggle.setAttribute('aria-expanded',String(open));header.classList.toggle('nav-open',open)});
 }
 applyStudioNavigation();
+function alignStudioFooter(){
+  const footer=document.querySelector('footer');
+  if(!footer)return;
+  footer.classList.add('studio-site-footer');
+  footer.innerHTML="<a class=\"brand original-brand\" href=\"/\" aria-label=\"OMEGALUX Studio home\"><img src=\"/assets/studio-logo.png\" width=\"1698\" height=\"926\" alt=\"OMEGALUX Studio — copper and silver logo\"></a><div class=\"footer-contact\"><p>Lighting design. Lighting supply. Considered together.</p><a href=\"mailto:info@omegaluxstudio.com\">info@omegaluxstudio.com</a><a href=\"mailto:design@omegaluxstudio.com\">design@omegaluxstudio.com</a><a href=\"tel:+971581178675\">+971 58 117 8675</a><span>Abu Dhabi, United Arab Emirates</span><a href=\"https://www.omegaluxstudio.com/\">www.omegaluxstudio.com</a></div><span>© <span id=\"year\">2026</span> OMEGALUX Studio</span>";
+}
+alignStudioFooter();
 const element = id => document.getElementById(id);
 const payload = element('page-data');
 const data = payload ? JSON.parse(payload.textContent) : null;
