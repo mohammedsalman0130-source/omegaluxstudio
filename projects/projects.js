@@ -1,5 +1,5 @@
 /* Shared, non-invasive social links: Instagram + LinkedIn + WhatsApp */
-(()=>{if(!document.querySelector('script[data-ol-social]')){const s=document.createElement('script');s.dataset.olSocial='true';s.src='/social-bar.js?v=20261117-mobile-right-fix';document.head.appendChild(s);}})();
+(()=>{if(!document.querySelector('script[data-ol-social]')){const s=document.createElement('script');s.dataset.olSocial='true';s.src='/social-bar.js?v=20261117-mobile-isolation-v2';document.head.appendChild(s);}})();
 
 const projects=JSON.parse(document.getElementById('project-data').textContent);let current=null,viewlist=[],viewIndex=0,listingScrollY=0,viewerReturnFocus=null;
 const listing=document.getElementById('listing'),detail=document.getElementById('detail'),viewer=document.getElementById('viewer');
