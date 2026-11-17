@@ -31,3 +31,13 @@
 .product-download-link:hover,.product-download-link:focus-visible{color:var(--ink)}
 .product-download-link[aria-busy="true"]{opacity:.65;pointer-events:none}
 @media(prefers-reduced-motion:reduce){.download-chevron{transition:none}}
+
+/* Match the shared OMEGALUX site footer across collection, category and product pages. */
+footer.studio-site-footer{background:#102322;color:#eee9df;padding:40px 6%;display:flex;align-items:center;justify-content:space-between;gap:30px;font:15px/1.55 "DM Sans",Arial,sans-serif}
+footer.studio-site-footer .original-brand{display:block;flex:0 0 auto;line-height:0}
+footer.studio-site-footer .original-brand img{display:block;width:184px;height:auto;object-fit:contain}
+footer.studio-site-footer .footer-contact{display:flex;flex-direction:column;gap:8px;font-size:11px;line-height:1.5}
+footer.studio-site-footer .footer-contact p{margin:0 0 5px}
+footer.studio-site-footer .footer-contact>span,footer.studio-site-footer>span{color:#acb5af;font-size:10px}
+footer.studio-site-footer .footer-contact a:hover{text-decoration:underline;text-underline-offset:3px}
+@media(max-width:800px){footer.studio-site-footer{align-items:flex-start;flex-direction:column;gap:10px}footer.studio-site-footer .original-brand img{width:160px}footer.studio-site-footer .footer-contact{font-size:12px}footer.studio-site-footer .footer-contact p{margin:0}}
