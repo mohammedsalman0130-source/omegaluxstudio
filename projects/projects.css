@@ -69,3 +69,20 @@ body{font-size:15px}
 .site-mast nav a{font-size:13px;font-weight:400;line-height:1.25}
 @media(min-width:801px) and (max-width:1050px){.site-mast .brand img{width:140px}.site-mast nav a{font-size:11px}}
 @media(max-width:800px){.site-mast .brand img{width:124px}}
+
+
+/* Match the shared main-section header type, logo size and active state. */
+@media(min-width:801px){
+  .site-mast .brand img{width:154px}
+  .site-mast nav{gap:clamp(12px,1.6vw,24px)}
+  .site-mast nav a{font:400 12px/1.25 'DM Sans',Arial,sans-serif}
+  .site-mast nav .nav-cta{padding:14px 22px}
+  .site-mast nav .nav-cta span{display:none}
+  .site-mast nav a[aria-current="page"]{color:#d5a57d}
+  .site-mast nav a[aria-current="page"]:after{display:none}
+}
+@media(min-width:801px) and (max-width:1050px){
+  .site-mast .brand img{width:150px}
+  .site-mast nav{gap:20px}
+  .site-mast nav a{font-size:12px}
+}
