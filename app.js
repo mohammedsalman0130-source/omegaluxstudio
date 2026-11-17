@@ -1,5 +1,5 @@
 /* Shared, non-invasive social links: Instagram + LinkedIn + WhatsApp */
-(()=>{if(!document.querySelector('script[data-ol-social]')){const s=document.createElement('script');s.dataset.olSocial='true';s.src='/social-bar.js?v=20261117-linkedin-icon-fix';document.head.appendChild(s);}})();
+(()=>{if(!document.querySelector('script[data-ol-social]')){const s=document.createElement('script');s.dataset.olSocial='true';s.src='/social-bar.js?v=20261117-mobile-right-fix';document.head.appendChild(s);}})();
 // Keep the portfolio next to Products throughout the main website.
 for(const nav of document.querySelectorAll('header nav')){const products=[...nav.querySelectorAll('a')].find(a=>a.textContent.trim()==='Products');if(products&&!nav.querySelector('a[href="/projects/"]')){const link=document.createElement('a');link.href='/projects/';link.textContent='Projects';products.after(link);}}
 const BUSINESS_EMAIL='info@omegaluxstudio.com';
