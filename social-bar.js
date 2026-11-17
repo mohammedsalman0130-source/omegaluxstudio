@@ -19,7 +19,7 @@
     if (document.getElementById('ol-floating-social-panel')) return;
     const stylesheet = document.createElement('link');
     stylesheet.rel = 'stylesheet';
-    stylesheet.href = '/social-bar.css?v=20261117-linkedin-icon-fix';
+    stylesheet.href = '/social-bar.css?v=20261117-mobile-right-fix';
     document.head.appendChild(stylesheet);
 
     const panel = document.createElement('nav');
