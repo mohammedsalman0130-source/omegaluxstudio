@@ -3,8 +3,15 @@
   position: fixed;
   top: 50%;
   right: 0;
+  left: auto;
   transform: translateY(-50%);
   z-index: 90;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -21,6 +28,9 @@
   align-items: center;
   height: 54px;
   width: 54px;
+  padding: 0;
+  margin: 0;
+  border: 0;
   overflow: hidden;
   border-radius: 9px 0 0 9px;
   box-shadow: 0 4px 18px rgba(0, 0, 0, .20);
@@ -70,6 +80,29 @@
 #ol-floating-social-panel a:focus-visible {
   outline: 3px solid #fff;
   outline-offset: -4px;
+}
+/* The site has a generic mobile "nav" rule that sets left:0, a dark
+   background and large padding. Explicitly opt this fixed social nav out. */
+@media (max-width: 800px) {
+  #ol-floating-social-panel {
+    position: fixed;
+    display: flex;
+    top: 55%;
+    right: 0;
+    left: auto;
+    width: max-content;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    transform: translateY(-50%);
+  }
+  #ol-floating-social-panel .ol-social-tile {
+    display: flex;
+    padding: 0;
+    border: 0;
+  }
 }
 @media (max-width: 640px) {
   #ol-floating-social-panel { top: 55%; gap: 5px; }
