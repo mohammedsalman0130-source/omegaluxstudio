@@ -65,3 +65,20 @@ body .mast nav a,body .mast .talk{font-family:'DM Sans',Arial,sans-serif;font-si
 @media(min-width:801px) and (max-width:1050px){body .mast .brand img{width:140px}body .mast nav a,body .mast .talk{font-size:11px}}
 @media(max-width:800px){body .mast .brand img{width:124px}}
 @media(max-width:580px){body .mast .brand img{width:124px}}
+
+
+/* Match the shared main-section header at desktop and tablet sizes. */
+@media(min-width:801px){
+  .site-mast .original-brand img{width:154px}
+  .site-mast nav{gap:clamp(12px,1.6vw,24px)}
+  .site-mast nav a{font:400 12px/1.25 'DM Sans',Arial,sans-serif}
+  .site-mast nav .nav-cta{padding:14px 22px}
+  .site-mast nav .nav-cta span{display:none}
+  .site-mast nav a[aria-current="page"]{color:#d5a57d}
+  .site-mast nav a[aria-current="page"]:after{display:none}
+}
+@media(min-width:801px) and (max-width:1050px){
+  .site-mast .original-brand img{width:150px}
+  .site-mast nav{gap:20px}
+  .site-mast nav a{font-size:12px}
+}
