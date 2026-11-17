@@ -1,4 +1,4 @@
-/* OMEGALUX Studio — right-edge floating Instagram + WhatsApp panel */
+/* OMEGALUX Studio — right-edge floating Instagram + LinkedIn + WhatsApp panel */
 #ol-floating-social-panel {
   position: fixed;
   top: 50%;
@@ -33,6 +33,7 @@
 #ol-floating-social-panel .ol-social-instagram {
   background: linear-gradient(145deg, #833ab4 0%, #c13584 40%, #e1306c 75%, #f77737 100%);
 }
+#ol-floating-social-panel .ol-social-linkedin { background: #0a66c2; }
 #ol-floating-social-panel .ol-social-whatsapp { background: #1fa855; }
 #ol-floating-social-panel .ol-social-icon {
   box-sizing: border-box;
