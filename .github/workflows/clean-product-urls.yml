@@ -1,0 +1,55 @@
+name: Validate and publish clean product URLs
+on:
+  pull_request:
+    paths:
+      - 'products/**'
+      - 'scripts/build_clean_product_urls.py'
+      - '.github/workflows/clean-product-urls.yml'
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages-clean-product-urls
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - name: Generate real folder pages
+        run: python3 scripts/build_clean_product_urls.py
+      - name: Validate Vein Globe direct URL and shared assets
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('products/table-lamps/Vein-Globe/index.html')
+          assert p.exists(), 'Missing Vein Globe folder URL'
+          s=p.read_text()
+          assert '<base href="/products/">' in s
+          assert 'https://www.omegaluxstudio.com/products/table-lamps/Vein-Globe/' in s
+          assert 'media/editorial/' in s
+          assert Path('products/collection.js').exists()
+          assert Path('products/collection.css').exists()
+          assert Path('index.html').exists()
+          print('Nested clean URL and relative asset routing validated')
+          PY
+      - uses: actions/upload-pages-artifact@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          path: '.'
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy complete site to Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

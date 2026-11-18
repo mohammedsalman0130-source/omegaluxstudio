@@ -47,7 +47,9 @@ if (document.body.dataset.page === 'category') {
     if (sort.value) matches.sort((a,b) => a.item.name.localeCompare(b.item.name) * (sort.value === 'az' ? 1 : -1));
     for (const {item,card} of matches) {
       const exact=item.codes.find(code=>code.toLowerCase()===query);
-      card.href='product-'+item.key+'.html'+(exact?'?model='+encodeURIComponent(exact):'');
+      const family={table:'table-lamps',pendant:'pendants',chandelier:'chandeliers',wall:'wall-lights',floor:'floor-lamps',dining:'above-the-table'}[item.category]||item.category;
+      const productSlug=item.name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-|-$/g,'').split('-').map(x=>x.charAt(0).toUpperCase()+x.slice(1)).join('-');
+      card.href='/products/'+family+'/'+productSlug+'/'+(exact?'?model='+encodeURIComponent(exact):'');
     }
     grid.replaceChildren(...matches.map(match=>match.card));
     element('results').textContent = matches.length + (matches.length === 1 ? ' design' : ' designs');
