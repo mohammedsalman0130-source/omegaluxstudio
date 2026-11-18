@@ -6,7 +6,7 @@ function applyStudioNavigation(){
   if(!header)return;
   if(header.classList.contains('mast')) {
     header.className='site-mast';
-    header.innerHTML='<a class="brand original-brand" href="/" aria-label="OMEGALUX Studio home"><img src="/assets/studio-logo.png" alt="OMEGALUX Studio"></a><button class="site-menu-toggle" type="button" aria-expanded="false" aria-controls="site-main-nav">Menu <span aria-hidden="true">☰</span></button><nav id="site-main-nav" aria-label="Main navigation"><a href="/">Home</a><a href="/about-us/">About Us</a><a href="/our-approach/">Our approach</a><a href="/products/" aria-current="page">Products</a><a href="/projects/">Projects</a><a href="/lighting-guide/">Lighting guide</a><a href="/blog/">Blog</a><a class="nav-cta" href="/let's-talk/">Let’s talk</a></nav>';
+    header.innerHTML='<a class="brand original-brand" href="/" aria-label="OMEGALUX Studio home"><img src="/assets/studio-logo.png" alt="OMEGALUX Studio"></a><button class="site-menu-toggle" type="button" aria-expanded="false" aria-controls="site-main-nav">Menu <span aria-hidden="true">☰</span></button><nav id="site-main-nav" aria-label="Main navigation"><a href="/">Home</a><a href="/about-us/">About Us</a><a href="/our-approach/">Our approach</a><a href="/products/" aria-current="page">Products</a><a href="/projects/">Projects</a><a href="/lighting-guide/">Lighting guide</a><a href="/blog/">Blog</a><a class="nav-cta" href="/let\'s-talk/">Let’s talk</a></nav>';
   }
   const toggle=header.querySelector('.site-menu-toggle');
   toggle.addEventListener('click',()=>{const open=toggle.getAttribute('aria-expanded')!=='true';toggle.setAttribute('aria-expanded',String(open));header.classList.toggle('nav-open',open)});
