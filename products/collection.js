@@ -12,6 +12,18 @@ function applyStudioNavigation(){
   toggle.addEventListener('click',()=>{const open=toggle.getAttribute('aria-expanded')!=='true';toggle.setAttribute('aria-expanded',String(open));header.classList.toggle('nav-open',open)});
 }
 applyStudioNavigation();
+
+// Normalize navigation on all generated product pages (including older site-mast markup).
+// Product/category URLs such as "index.html" inside /products/ must remain relative.
+function normalizeProductSectionUrls(){
+  const routes={expertise:"/about-us/",approach:"/our-approach/",recommendations:"/lighting-guide/",blog:"/blog/",contact:"/let's-talk/"};
+  document.querySelectorAll('a[href]').forEach(link=>{
+    const href=link.getAttribute('href');
+    const match=href&&href.match(/^(?:https?:\/\/(?:www\.)?omegaluxstudio\.com)?\/?(expertise|approach|recommendations|blog|contact)\.html([?#].*)?$/i);
+    if(match)link.setAttribute('href',routes[match[1].toLowerCase()]+(match[2]||''));
+  });
+}
+normalizeProductSectionUrls();
 function alignStudioFooter(){
   const footer=document.querySelector('footer');
   if(!footer)return;
