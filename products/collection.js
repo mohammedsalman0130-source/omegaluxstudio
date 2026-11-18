@@ -4,7 +4,7 @@
 function applyStudioNavigation(){
   const header=document.querySelector('header.mast');
   if(!header)return;
-  header.className='mast site-mast';
+  header.className='site-mast';
   header.innerHTML='<a class="brand original-brand" href="/" aria-label="OMEGALUX Studio home"><img src="/assets/studio-logo.png" alt="OMEGALUX Studio"></a><button class="site-menu-toggle" type="button" aria-expanded="false" aria-controls="site-main-nav">Menu <span aria-hidden="true">☰</span></button><nav id="site-main-nav" aria-label="Main navigation"><a href="/">Home</a><a href="/expertise.html">About Us</a><a href="/approach.html">Our approach</a><a href="/products/" aria-current="page">Products</a><a href="/projects/">Projects</a><a href="/recommendations.html">Lighting guide</a><a href="/blog.html">Blog</a><a class="nav-cta" href="/contact.html">Let’s talk</a></nav>';
   const toggle=header.querySelector('.site-menu-toggle');
   toggle.addEventListener('click',()=>{const open=toggle.getAttribute('aria-expanded')!=='true';toggle.setAttribute('aria-expanded',String(open));header.classList.toggle('nav-open',open)});
@@ -142,7 +142,7 @@ if (document.body.dataset.page === 'product') {
         const category=categoryNames[data.category]||'Decorative lighting';
         pdf.setProperties({title:data.name+' | OMEGALUX Technical Specification',subject:'Product technical specification',author:'OMEGALUX Studio'});
         pdf.setFillColor(...green); pdf.rect(0,0,pageW,34,'F');
-        const logo=await readImageForPdf(document.querySelector('header.mast .brand img'),'image/png');
+        const logo=await readImageForPdf(document.querySelector('header.site-mast .brand img'),'image/png');
         placePdfImage(pdf,logo,13,4,47,26);
         pdf.setFont('helvetica','normal'); pdf.setFontSize(7); pdf.setTextColor(246,243,237);
         pdf.text('PRODUCT TECHNICAL SHEET',pageW-margin,14,{align:'right'});
