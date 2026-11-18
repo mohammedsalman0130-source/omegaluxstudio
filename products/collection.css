@@ -108,3 +108,23 @@ body .mast nav a,body .mast .talk{font-family:'DM Sans',Arial,sans-serif;font-si
   .site-mast.nav-open nav { display:flex; }
   .site-mast nav a { display:block; padding:11px 0; font-size:14px; }
 }
+
+/* Canonical desktop ribbon: match pages.css and Projects (154px logo).
+   Keep the 116px header, six-percent gutters and shared brand artwork. */
+@media (min-width:801px) {
+  .site-mast {
+    height:116px;
+    min-height:116px;
+    padding-inline:var(--site-gutter);
+    background:#102322;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .site-mast .original-brand img { width:154px; height:auto; }
+  .site-mast nav { gap:clamp(12px,1.6vw,24px); }
+  .site-mast nav a { font:400 12px/1.25 'DM Sans',Arial,sans-serif; }
+}
+@media (min-width:801px) and (max-width:1050px) {
+  .site-mast .original-brand img { width:150px; }
+  .site-mast nav { gap:20px; }
+}
