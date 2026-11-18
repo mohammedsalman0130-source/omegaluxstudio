@@ -142,7 +142,7 @@ if (document.body.dataset.page === 'product') {
         const category=categoryNames[data.category]||'Decorative lighting';
         pdf.setProperties({title:data.name+' | OMEGALUX Technical Specification',subject:'Product technical specification',author:'OMEGALUX Studio'});
         pdf.setFillColor(...green); pdf.rect(0,0,pageW,34,'F');
-        const logo=await readImageForPdf(document.querySelector('header.mast .brand img'),'image/png');
+        const logo=await readImageForPdf(document.querySelector('header.site-mast .brand img'),'image/png');
         placePdfImage(pdf,logo,13,4,47,26);
         pdf.setFont('helvetica','normal'); pdf.setFontSize(7); pdf.setTextColor(246,243,237);
         pdf.text('PRODUCT TECHNICAL SHEET',pageW-margin,14,{align:'right'});
