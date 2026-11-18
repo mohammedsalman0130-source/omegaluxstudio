@@ -6,7 +6,7 @@ function applyStudioNavigation(){
   if(!header)return;
   if(header.classList.contains('mast')) {
     header.className='site-mast';
-    header.innerHTML='<a class="brand original-brand" href="/" aria-label="OMEGALUX Studio home"><img src="/assets/studio-logo.png" alt="OMEGALUX Studio"></a><button class="site-menu-toggle" type="button" aria-expanded="false" aria-controls="site-main-nav">Menu <span aria-hidden="true">☰</span></button><nav id="site-main-nav" aria-label="Main navigation"><a href="/">Home</a><a href="/expertise.html">About Us</a><a href="/approach.html">Our approach</a><a href="/products/" aria-current="page">Products</a><a href="/projects/">Projects</a><a href="/recommendations.html">Lighting guide</a><a href="/blog.html">Blog</a><a class="nav-cta" href="/contact.html">Let’s talk</a></nav>';
+    header.innerHTML='<a class="brand original-brand" href="/" aria-label="OMEGALUX Studio home"><img src="/assets/studio-logo.png" alt="OMEGALUX Studio"></a><button class="site-menu-toggle" type="button" aria-expanded="false" aria-controls="site-main-nav">Menu <span aria-hidden="true">☰</span></button><nav id="site-main-nav" aria-label="Main navigation"><a href="/">Home</a><a href="/about-us/">About Us</a><a href="/our-approach/">Our approach</a><a href="/products/" aria-current="page">Products</a><a href="/projects/">Projects</a><a href="/lighting-guide/">Lighting guide</a><a href="/blog/">Blog</a><a class="nav-cta" href="/let's-talk/">Let’s talk</a></nav>';
   }
   const toggle=header.querySelector('.site-menu-toggle');
   toggle.addEventListener('click',()=>{const open=toggle.getAttribute('aria-expanded')!=='true';toggle.setAttribute('aria-expanded',String(open));header.classList.toggle('nav-open',open)});
@@ -16,7 +16,7 @@ function alignStudioFooter(){
   const footer=document.querySelector('footer');
   if(!footer)return;
   footer.classList.add('studio-site-footer');
-  footer.innerHTML="<a class=\"brand original-brand\" href=\"/\" aria-label=\"OMEGALUX Studio home\"><img src=\"/assets/studio-logo.png\" width=\"1698\" height=\"926\" alt=\"OMEGALUX Studio — copper and silver logo\"></a><div class=\"footer-contact\"><p>Lighting design. Lighting supply. Considered together.</p><a href=\"mailto:info@omegaluxstudio.com\">info@omegaluxstudio.com</a><a href=\"mailto:design@omegaluxstudio.com\">design@omegaluxstudio.com</a><a href=\"tel:+971581178675\">+971 58 117 8675</a><span>Abu Dhabi, United Arab Emirates</span><a href=\"https://www.omegaluxstudio.com/\">www.omegaluxstudio.com</a></div><span>© <span id=\"year\">2026</span> OMEGALUX Studio</span>";
+  footer.innerHTML="<a class=\"brand original-brand\" href=\"/\" aria-label=\"OMEGALUX Studio home\"><img src=\"/assets/studio-logo.png\" width=\"1698\" height=\"926\" alt=\"OMEGALUX Studio — copper and silver logo\"></a><div class=\"footer-contact\"><p>Lighting design. Lighting supply. Considered together.</p><a href=\"mailto:info@omegaluxstudio.com\">info@omegaluxstudio.com</a><a href=\"mailto:design@omegaluxstudio.com\">design@omegaluxstudio.com</a><a href=\"tel:+971581178675\">+971 58 117 8675</a><span>Abu Dhabi, United Arab Emirates</span><a href=\"https://omegaluxstudio.com/\">www.omegaluxstudio.com</a></div><span>© <span id=\"year\">2026</span> OMEGALUX Studio</span>";
 }
 alignStudioFooter();
 const element = id => document.getElementById(id);
