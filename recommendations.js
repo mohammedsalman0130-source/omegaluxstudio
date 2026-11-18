@@ -33,7 +33,7 @@ function show(){
  $('#source-title').textContent=`SLL Code for Lighting · 2022 · §3.2 · Table ${current.table} · Ref. ${current.ref} · printed p. ${current.page} (PDF p. ${current.pdf_page})`;
  $('#source-edition').textContent='Task values: the selected schedule row. Reflectance: §3.1.2.2, p. 32. Surrounding/background criteria: §§3.1.3.4–3.1.3.6, pp. 34–36. General CCT groups: §3.1.7.2, p. 45.'+(current.table==='3.58'?' Additional railway table notes: printed p. 102.':'');
  const brief=`Please review lighting for ${current.area} (${current.industry}).\n${$('#source-title').textContent}\nRequired maintained illuminance: ${lux(current.lux)}; modified: ${lux(current.modified)}. Task U0: ${uniform(current.uniformity)}. UGR limit: ${value(current.ugr)}; minimum Ra/CRI: ${value(current.ra)}.\nCylindrical: ${lux(current.cylindrical)}; walls: ${lux(current.wall)}; ceiling: ${lux(current.ceiling)}.\nCCT: ${current.cct||'not fixed in the task schedule'}.\nGeneral surface reflectance: ceiling 0.70–0.90; walls 0.50–0.80; floor 0.20–0.60.\nApplication notes: ${current.notes||'None listed.'} ${current.source_note||''}\n${current.table_note||''}\n\nProject location / stage: `;
- $('#use-reference').href='contact.html?brief='+encodeURIComponent(brief);
+ $('#use-reference').href='/let's-talk/?brief='+encodeURIComponent(brief);
  const params=new URLSearchParams(location.search);if(['sll','cibse'].includes(params.get('source')))history.replaceState(null,'','?source=sll&area='+encodeURIComponent(current.id)+(params.has('print')?'&print=1':''));
 }
 industry.onchange=()=>updateOptions();search.oninput=()=>updateOptions();area.onchange=show;$('#reset').onclick=()=>{industry.value='all';search.value='';updateOptions(defaultId)};
