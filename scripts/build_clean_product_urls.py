@@ -77,6 +77,9 @@ for original, source in sources.items():
     route = urls[original.name]
     # All images, styles, scripts and generated download dependencies remain in /products/.
     page = normalize(source)
+    # The shared base keeps media/CSS/JS working on nested pages. Keep
+    # fragment-only links local to the product page, not the /products/ base.
+    page = re.sub(r'((?:href|action)\s*=\s*["\x27])#([^"\x27]*)', lambda m: m.group(1) + route + "#" + m.group(2), page, flags=re.I)
     page = re.sub(r'<link\s+rel=["\x27]canonical["\x27][^>]*>', "", page, count=1, flags=re.I)
     page = page.replace("<head>", f'<head><base href="/products/"><link rel="canonical" href="{CANON}{route}">', 1)
     destination = ROOT / route.removeprefix("/products/") / "index.html"
