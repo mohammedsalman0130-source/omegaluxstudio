@@ -50,12 +50,29 @@ for path in FILES:
     seen.add(route)
     sources[path] = source
     urls[path.name] = route
-# Resolve links across ALL products/categories, including breadcrumbs and product cards.
+# Match navigational attributes once per document rather than scanning every
+# product file hundreds of times (product images include large embedded data URLs).
+LINK_RE = re.compile(r'((?:href|action)\s*=\s*["\x27])([^"\x27]+)(["\x27])', re.I)
 def normalize(html):
-    for filename, route in urls.items():
-        html = replace_url(html, filename, route)
-    html = replace_url(html, "index.html", "/products/")
-    return html
+    def rewrite(m):
+        prefix, raw, suffix = m.groups()
+        if raw.startswith(("https://", "http://")):
+            match = re.match(r'https?://(?:www\\.)?omegaluxstudio\\.com(/.*)', raw, re.I)
+            if not match:
+                return m.group(0)
+            raw_path = match.group(1)
+        else:
+            raw_path = raw
+        path, sep, extra = raw_path.partition("#")
+        path, query_sep, query = path.partition("?")
+        name = path.removeprefix("/products/").removeprefix("/")
+        route = urls.get(name)
+        if name == "index.html":
+            route = "/products/"
+        if not route:
+            return m.group(0)
+        return prefix + route + ("?" + query if query_sep else "") + ("#" + extra if sep else "") + suffix
+    return LINK_RE.sub(rewrite, html)
 for original, source in sources.items():
     route = urls[original.name]
     # All images, styles, scripts and generated download dependencies remain in /products/.
