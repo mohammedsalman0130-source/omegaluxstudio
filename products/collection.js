@@ -34,6 +34,39 @@ alignStudioFooter();
 const element = id => document.getElementById(id);
 const payload = element('page-data');
 const data = payload ? JSON.parse(payload.textContent) : null;
+
+// Keep legacy catalogue filenames functional, but expose the actual category/product
+// folder path in the address bar. A base tag preserves existing relative image,
+// sketch, stylesheet and PDF asset locations when an old bookmark is opened.
+(function normalizeCleanCatalogRoutes(){
+  const groups={table:'table-lamps',pendant:'pendants',chandelier:'chandeliers',wall:'wall-lights',floor:'floor-lamps',dining:'above-the-table'};
+  const toSlug=name=>name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-|-$/g,'').split('-').map(part=>part.charAt(0).toUpperCase()+part.slice(1)).join('-');
+  const old=location.pathname.match(/^\/products\/(product|category)-([a-z]+)(?:-\d+)?\.html$/i);
+  if(old){
+    let clean;
+    if(old[1]==='category') clean='/products/'+(groups[old[2]]||old[2])+'/';
+    else if(data && data.name) clean='/products/'+(groups[old[2]]||old[2])+'/'+toSlug(data.name)+'/';
+    if(clean){
+      if(!document.querySelector('base')){const base=document.createElement('base');base.href='/products/';document.head.prepend(base);}
+      document.querySelectorAll('a[href^="#"]').forEach(a=>{a.setAttribute('href',clean+a.getAttribute('href'));});
+      history.replaceState(history.state,'',clean+location.search+location.hash);
+    }
+  }
+  const catHref={index:'/products/', 'category-table':'/products/table-lamps/',
+    'category-pendant':'/products/pendants/', 'category-chandelier':'/products/chandeliers/',
+    'category-wall':'/products/wall-lights/', 'category-floor':'/products/floor-lamps/',
+    'category-dining':'/products/above-the-table/'};
+  const products=new Map();
+  if(Array.isArray(data)) for(const item of data)
+    products.set('product-'+item.key, '/products/'+(groups[item.category]||item.category)+'/'+toSlug(item.name)+'/');
+  document.querySelectorAll('a[href]').forEach(a=>{
+    const href=a.getAttribute('href');
+    const m=href&&href.match(/^(?:https?:\/\/(?:www\.)?omegaluxstudio\.com)?(?:\/products\/)?(index|category-[a-z]+|product-[a-z]+-\d+)\.html([?#].*)?$/i);
+    if(!m) return;
+    const target=catHref[m[1]]||products.get(m[1]);
+    if(target) a.setAttribute('href',target+(m[2]||''));
+  });
+})();
 if (document.body.dataset.page === 'category') {
   const grid = element('cards');
   const cards = Array.from(grid.children);
@@ -59,6 +92,7 @@ if (document.body.dataset.page === 'category') {
   lamp.addEventListener('change', refresh);
   sort.addEventListener('change', refresh);
   element('clear').addEventListener('click', () => { search.value=''; lamp.value=''; sort.value=''; refresh(); search.focus(); });
+  refresh();
   if (location.hash === '#search') search.focus();
 }
 if (document.body.dataset.page === 'product') {
