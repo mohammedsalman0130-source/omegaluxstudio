@@ -27,5 +27,5 @@ $('#email').onclick=()=>compose('Hello OMEGALUX Studio,\n\nI would like to discu
 if(BUSINESS_EMAIL){form.querySelector('button[type=submit]').innerHTML='Send enquiry by email <span>↗</span>';$('#form-status').textContent='Opens your email app. Your details are shared only when you send.'}
 const params=new URLSearchParams(location.search);if(params.get('brief')){form.elements.message.value=params.get('brief');$('#service').value='Lighting design'}if(['Lighting design','Lighting supply','Design & supply'].includes(params.get('service')))$('#service').value=params.get('service');}
 
-document.querySelectorAll('[data-service]').forEach(a=>a.href='/let's-talk/?service='+encodeURIComponent(a.dataset.service));
+document.querySelectorAll('[data-service]').forEach(a=>a.href='/let\'s-talk/?service='+encodeURIComponent(a.dataset.service));
 
