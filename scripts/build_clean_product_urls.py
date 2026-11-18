@@ -57,7 +57,7 @@ def normalize(html):
     def rewrite(m):
         prefix, raw, suffix = m.groups()
         if raw.startswith(("https://", "http://")):
-            match = re.match(r'https?://(?:www\\.)?omegaluxstudio\\.com(/.*)', raw, re.I)
+            match = re.match(r'https?://(?:www\.)?omegaluxstudio\.com(/.*)', raw, re.I)
             if not match:
                 return m.group(0)
             raw_path = match.group(1)
