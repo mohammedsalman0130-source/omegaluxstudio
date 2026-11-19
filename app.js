@@ -8,7 +8,7 @@ const $=s=>document.querySelector(s);
 const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)');
 const menu=$('.menu-toggle');
 if(menu) menu.onclick=()=>{const open=menu.getAttribute('aria-expanded')!=='true';menu.setAttribute('aria-expanded',open);$('#main-nav').classList.toggle('open',open)};
-if($('#year')) $('#year').textContent=new Date().getFullYear();
+
 const intro=$('#intro'); let timer,returnFocus; const INTRO_KEY='omegalux-intro-cinematic-v4-copper';
 function endIntro(){if(!intro)return;window.OmegaIntro?.stop();intro.classList.add('hidden');intro.setAttribute('aria-hidden','true');intro.inert=true;document.body.style.overflow='';for(const el of document.querySelectorAll('main,header,footer'))el.inert=false;clearTimeout(timer);if(returnFocus&&returnFocus!==document.body)returnFocus.focus({preventScroll:true});sessionStorage.setItem(INTRO_KEY,'1')}
 function startIntro(){if(!intro)return;if(reduceMotion.matches){endIntro();return}clearTimeout(timer);returnFocus=document.activeElement;intro.classList.remove('hidden');intro.removeAttribute('aria-hidden');intro.inert=false;document.body.style.overflow='hidden';for(const el of document.querySelectorAll('main,header,footer'))el.inert=true;const stage=intro.querySelector('.intro-stage');window.OmegaIntro.play(stage,endIntro);$('#skip').focus({preventScroll:true})}
