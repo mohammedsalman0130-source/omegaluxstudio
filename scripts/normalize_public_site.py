@@ -86,7 +86,7 @@ for path in sorted(ROOT.rglob('*.html')):
     hit['dated_article_metadata_removed']+=n
     if path.name=='index.html':
         target=HOST+('/' if rel=='index.html' else '/'+rel.removesuffix('index.html'))
-        tag='<link rel="canonical" href="'+html.escape(target,quote=True)+'">'
+        tag='<link rel="canonical" href="'+html.escape(target,quote=False)+'">'
         if CANONICAL_RE.search(result):
             result=CANONICAL_RE.sub(tag,result,count=1)
         else:
@@ -104,7 +104,7 @@ names=sorted({'/' if p.relative_to(ROOT).as_posix()=='index.html'
               else '/'+p.relative_to(ROOT).as_posix().removesuffix('index.html')
               for p in ROOT.rglob('index.html')})
 xml='<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-xml+=''.join('  <url><loc>'+html.escape(HOST+url)+'</loc></url>\n' for url in names)
+xml+=''.join('  <url><loc>'+html.escape(HOST+url,quote=False)+'</loc></url>\n' for url in names)
 xml+='</urlset>\n'
 sitemap=ROOT/'sitemap.xml'
 if not sitemap.exists() or sitemap.read_text(encoding='utf-8')!=xml:
