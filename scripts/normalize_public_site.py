@@ -57,7 +57,9 @@ def clean_hrefs(source,rel):
         keys=[bare]
         if rel.startswith('products/') and not bare.startswith('products/'):
             keys.insert(0,'products/'+bare)
-        route=next((ROUTES[k] for k in keys if k in ROUTES),None)
+        route=('/products/' if rel.startswith('products/') and bare=='index.html' and not path.startswith('/')
+               else '/projects/' if rel.startswith('projects/') and bare=='index.html' and not path.startswith('/')
+               else next((ROUTES[k] for k in keys if k in ROUTES),None))
         if not route:
             if path.endswith('/index.html'):
                 route=path.removesuffix('index.html')
