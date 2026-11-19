@@ -31,6 +31,8 @@ jobs:
         run: python3 scripts/build_clean_product_urls.py
       - name: Generate clean Lighting Guide and Blog URLs
         run: python3 scripts/build_clean_content_urls.py
+      - name: Install PDF text inspection dependency
+        run: python3 -m pip install --disable-pip-version-check pymupdf
       - name: Audit routes and visible dates
         run: python3 scripts/audit_site_integrity.py
       - name: Validate Vein Globe direct URL and shared assets
