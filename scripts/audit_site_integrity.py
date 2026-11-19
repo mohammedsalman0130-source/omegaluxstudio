@@ -3,13 +3,13 @@
 from pathlib import Path
 from urllib.parse import urlsplit, unquote
 from collections import Counter
-import re, subprocess
+import re, subprocess, sys
 ROOT=Path(__file__).resolve().parents[1]
 html_files=sorted(ROOT.rglob("*.html"))
 legacy=Counter(); missing=Counter(); badcanon=[]; dates=[]; rawdates=[]
 anchor=re.compile(r'\b(?:href|action)=(["\x27])(.*?)\1',re.I)
 base_re=re.compile(r'<base\b[^>]*href=["\x27]([^"\x27]+)',re.I)
-canonical=re.compile(r'<link\b[^>]*rel=["\x27]canonical["\x27][^>]*href=["\x27]([^"\x27]+)',re.I)
+canonical=re.compile(r'<link\b(?=[^>]*rel=["\x27]canonical["\x27])[^>]*href=(["\x27])(.*?)\1',re.I)
 date_re=re.compile(r'\b(?:19|20)\d{2}\b|\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sept?(?:ember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+(?:\d{1,2}[ ,]+)?(?:19|20)\d{2}\b|\b(?:published|updated|posted)\s+(?:on\s+)?(?:19|20)\d{2}',re.I)
 for file in html_files:
     rel=file.relative_to(ROOT).as_posix()
@@ -36,10 +36,10 @@ for file in html_files:
     for d in list(date_re.finditer(visible))[:8]:
         hits=' '.join(visible[max(0,d.start()-45):d.end()+45].split())
         dates.append((rel,d.group(0),hits[:145]))
-    if '/index.html' in rel:
+    if rel.endswith('index.html'):
         expected='https://omegaluxstudio.com/'+rel.removesuffix('index.html')
         c=canonical.search(s)
-        if c and c.group(1).replace('www.','')!=expected: badcanon.append((rel,c.group(1),expected))
+        if c and c.group(2).replace('www.','')!=expected: badcanon.append((rel,c.group(2),expected))
 for pdf in sorted((ROOT/'articles').glob('*.pdf')):
     try:
         r=subprocess.run(['pdftotext','-layout',str(pdf),'-'],capture_output=True,check=True,text=True)
@@ -66,3 +66,14 @@ print('AUDIT VISIBLE_DATE_HITS',len(dates))
 for row in dates[:35]:print('VISIBLE_DATE',*row)
 print('AUDIT PDF_DATE_HITS',len(rawdates))
 for row in rawdates[:60]:print('PDF_DATE',*row)
+
+if '--strict' in sys.argv:
+    unexpected=[d for d in dates if not d[0].startswith('lighting-guide/')]
+    errors=[]
+    if legacy: errors.append(f'{sum(legacy.values())} legacy internal links remain')
+    if missing: errors.append(f'{sum(missing.values())} local targets missing')
+    if badcanon: errors.append(f'{len(badcanon)} canonical mismatches')
+    if unexpected: errors.append(f'{len(unexpected)} visible nontechnical date strings')
+    if rawdates: errors.append(f'{len(rawdates)} Blog PDF dates or extraction failures')
+    if errors:raise AssertionError('; '.join(errors))
+    print('PASS: All page links, canonical addresses, nontechnical date content and PDFs verified.')
