@@ -24,7 +24,7 @@ ROUTES={
 for f in (ROOT/'blog').glob('*/index.html'):
     ROUTES[f.parent.name+'.html']='/blog/'+f.parent.name+'/'
 for key,category in CATEGORY.items():
-    ROUTES['products/category-'+key+'.html']='/products/'+(category+'/' if category else '')
+    ROUTES['products/category-'+key+'.html']='/products/'+(category+'/' if category else 'all-products/')
 # The product builder already has authoritative named routes in canonical tags.
 product_re=re.compile(r'<link\b(?=[^>]*\brel=["\x27]canonical["\x27])[^>]*\bhref=(["\x27])(.*?)\1[^>]*>',re.I)
 for f in PRODUCTS.glob('product-*.html'):
