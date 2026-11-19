@@ -37,7 +37,7 @@ for path in FILES:
         continue
     if path.name.startswith("category-"):
         category = path.stem.removeprefix("category-")
-        route = ("/products/" if category == "all" else f"/products/{CATEGORIES.get(category, category)}/")
+        route = ("/products/all-products/" if category == "all" else f"/products/{CATEGORIES.get(category, category)}/")
     else:
         match = re.fullmatch(r"product-([a-z]+)-(\d+)", path.stem)
         if not match:
@@ -90,6 +90,8 @@ for original, source in sources.items():
     fallback = re.sub(r'<link\s+rel=["\x27]canonical["\x27][^>]*>', "", fallback, count=1, flags=re.I)
     fallback = fallback.replace("<head>", f'<head><link rel="canonical" href="{CANON}{route}">', 1)
     original.write_text(fallback, encoding="utf-8")
+# Preserve the curated cover in products/index.html. "All products" has its own
+# destination at /products/all-products/, rather than overwriting the landing page.
 # Update the catalog entrance links, too.
 home = ROOT / "index.html"
 if home.exists():
