@@ -62,6 +62,8 @@ article_names = sorted({
     m.group(1) for m in re.finditer(r'href=["\x27]/?([a-z0-9-]+)\.html(?:[?#][^"\x27]*)?["\x27]',
                                  blog_source, re.I)
     if (ROOT / (m.group(1) + ".html")).is_file()
+} | {
+    p.parent.name for p in (ROOT / "blog").glob("*/index.html")
 })
 assert article_names, "No Blog articles discovered: refusing to publish empty routes"
 routes = {name + ".html": "/blog/" + name + "/" for name in article_names}
@@ -104,7 +106,9 @@ blog_file.write_text(hrefs_clean(blog_source), encoding="utf-8")
 for name in article_names:
     filename = name + ".html"
     route = routes[filename]
-    source = (ROOT / filename).read_text(encoding="utf-8")
+    existing_page = ROOT / "blog" / name / "index.html"
+    original_source = existing_page if existing_page.is_file() else ROOT / filename
+    source = original_source.read_text(encoding="utf-8")
     page = hrefs_clean(source, current_route=route)
     # Articles were authored at /; their relative CSS/JS/images must continue
     # resolving against the domain root when served from /blog/article-slug/.
