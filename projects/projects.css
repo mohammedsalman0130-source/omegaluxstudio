@@ -86,3 +86,7 @@ body{font-size:15px}
   .site-mast nav{gap:20px}
   .site-mast nav a{font-size:12px}
 }
+
+/* Project cards are real deep links; retain the previous button appearance. */
+a.card{display:block;text-decoration:none;color:inherit}
+a.card:visited{color:inherit}

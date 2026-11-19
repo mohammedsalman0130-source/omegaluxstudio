@@ -10,11 +10,20 @@ on:
       - 'manuals.js'
       - 'recommendations.js'
       - '.github/workflows/clean-product-urls.yml'
+      - 'scripts/audit_site_integrity.py'
+      - 'scripts/build_clean_project_urls.py'
+      - 'scripts/normalize_public_site.py'
+      - 'scripts/remove_blog_pdf_dates.py'
+      - 'projects/**'
+      - 'articles/**'
+      - 'app.js'
+      - 'index.html'
+      - 'sitemap.xml'
   push:
     branches: [main]
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 concurrency:
@@ -30,6 +39,35 @@ jobs:
         run: python3 scripts/build_clean_product_urls.py
       - name: Generate clean Lighting Guide and Blog URLs
         run: python3 scripts/build_clean_content_urls.py
+      - name: Generate direct Project detail pages
+        run: python3 scripts/build_clean_project_urls.py
+      - name: Install PDF text inspection dependency
+        run: python3 -m pip install --disable-pip-version-check pymupdf
+      - name: Remove publication dates from Blog PDF footers
+        run: python3 scripts/remove_blog_pdf_dates.py
+      - name: Normalize site-wide navigation, canonical URLs and date displays
+        run: python3 scripts/normalize_public_site.py
+      - name: Strict full-site audit of links, canons and undated downloads
+        run: python3 scripts/audit_site_integrity.py --strict
+      - name: Verify project deep-link routing and shared JavaScript syntax
+        run: |
+          node --check projects/projects.js
+          node --check products/collection.js
+          node --check app.js
+          python3 - <<'PY'
+          from pathlib import Path
+          import re,json
+          root=Path('projects')
+          p=json.loads(re.search(r'<script[^>]*id=["\x27]project-data["\x27][^>]*>([\s\S]*?)</script>',(root/'index.html').read_text()).group(1))
+          pages=list(root.glob('*/index.html'))
+          assert len(pages)==len(p),(len(pages),len(p))
+          for page in pages:
+              html=page.read_text()
+              url='https://omegaluxstudio.com/projects/'+page.parent.name+'/'
+              assert '<base href="/projects/">' in html
+              assert '<link rel="canonical" href="'+url+'">' in html
+          print('PASS: Project deep-link pages and JavaScript syntax validated')
+          PY
       - name: Validate Vein Globe direct URL and shared assets
         run: |
           python3 - <<'PY'
@@ -38,13 +76,23 @@ jobs:
           assert p.exists(), 'Missing Vein Globe folder URL'
           s=p.read_text()
           assert '<base href="/products/">' in s
-          assert 'https://www.omegaluxstudio.com/products/table-lamps/Vein-Globe/' in s
+          assert 'https://omegaluxstudio.com/products/table-lamps/Vein-Globe/' in s
           assert 'media/editorial/' in s
           assert Path('products/collection.js').exists()
           assert Path('products/collection.css').exists()
           assert Path('index.html').exists()
           print('Nested clean URL and relative asset routing validated')
           PY
+      - name: Persist verified canonical site pages to the repository
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config user.name 'OMEGALUX site maintenance'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m 'Maintain clean project and product URLs and undated editorial files [skip ci]'
+            git push origin HEAD:main
+          fi
       - uses: actions/upload-pages-artifact@v3
         if: github.ref == 'refs/heads/main'
         with:
