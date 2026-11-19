@@ -7,7 +7,7 @@ import re, subprocess
 ROOT=Path(__file__).resolve().parents[1]
 html_files=sorted(ROOT.rglob("*.html"))
 legacy=Counter(); missing=Counter(); badcanon=[]; dates=[]; rawdates=[]
-anchor=re.compile(r'\b(?:href|action)=["\x27]([^"\x27]+)["\x27]',re.I)
+anchor=re.compile(r'\b(?:href|action)=(["\x27])(.*?)\1',re.I)
 base_re=re.compile(r'<base\b[^>]*href=["\x27]([^"\x27]+)',re.I)
 canonical=re.compile(r'<link\b[^>]*rel=["\x27]canonical["\x27][^>]*href=["\x27]([^"\x27]+)',re.I)
 date_re=re.compile(r'\b(?:19|20)\d{2}\b|\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sept?(?:ember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+(?:\d{1,2}[ ,]+)?(?:19|20)\d{2}\b|\b(?:published|updated|posted)\s+(?:on\s+)?(?:19|20)\d{2}',re.I)
@@ -15,8 +15,8 @@ for file in html_files:
     rel=file.relative_to(ROOT).as_posix()
     s=file.read_text(errors="replace")
     m=base_re.search(s)
-    base=m.group(1) if m else '/' + rel.rsplit('/',1)[0]+'/'
-    for ref in anchor.findall(s):
+    base=m.group(1) if m else ('/'+rel.rsplit('/',1)[0]+'/' if '/' in rel else '/')
+    for _quote,ref in anchor.findall(s):
         u=urlsplit(ref)
         if u.scheme and u.scheme not in ('http','https'):continue
         if u.netloc and u.netloc not in ('omegaluxstudio.com','www.omegaluxstudio.com'):continue
@@ -46,7 +46,15 @@ for pdf in sorted((ROOT/'articles').glob('*.pdf')):
         if r.returncode==0:
             for m in list(date_re.finditer(r.stdout))[:30]:
                 rawdates.append((pdf.name,m.group(0),' '.join(r.stdout[max(0,m.start()-45):m.end()+45].split())[:140]))
-    except Exception as ex: rawdates.append((pdf.name,'pdftotext unavailable',str(ex)[:120]))
+    except FileNotFoundError:
+        try:
+            import fitz
+            with fitz.open(pdf) as doc:
+                txt='\\n'.join(page.get_text() for page in doc)
+            for m in list(date_re.finditer(txt))[:30]:
+                rawdates.append((pdf.name,m.group(0),' '.join(txt[max(0,m.start()-45):m.end()+45].split())[:140]))
+        except Exception as ex: rawdates.append((pdf.name,'PDF extractor unavailable',str(ex)[:120]))
+    except Exception as ex: rawdates.append((pdf.name,'PDF extractor error',str(ex)[:120]))
 print('AUDIT HTML_PAGES',len(html_files))
 print('AUDIT LEGACY_LINKS',sum(legacy.values()),'UNIQUE',len(legacy))
 for (rel,link),count in legacy.most_common(25):print('LEGACY',rel,link,count)
