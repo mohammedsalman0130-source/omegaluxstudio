@@ -76,7 +76,7 @@ jobs:
           assert p.exists(), 'Missing Vein Globe folder URL'
           s=p.read_text()
           assert '<base href="/products/">' in s
-          assert 'https://www.omegaluxstudio.com/products/table-lamps/Vein-Globe/' in s
+          assert 'https://omegaluxstudio.com/products/table-lamps/Vein-Globe/' in s
           assert 'media/editorial/' in s
           assert Path('products/collection.js').exists()
           assert Path('products/collection.css').exists()
