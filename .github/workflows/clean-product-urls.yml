@@ -47,6 +47,23 @@ jobs:
         run: python3 scripts/remove_blog_pdf_dates.py
       - name: Normalize site-wide navigation, canonical URLs and date displays
         run: python3 scripts/normalize_public_site.py
+      - name: Confirm Products cover is preserved and All Products has its own URL
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          cover=Path('products/index.html').read_text()
+          catalogue_file=Path('products/all-products/index.html')
+          assert '<section class="cover">' in cover, 'Original Products cover hero missing'
+          assert 'media/editorial/cover.webp' in cover, 'Original hero image missing'
+          assert 'The Alabaster' in cover and 'Browse by category' in cover
+          assert 'href="/products/all-products/"' in cover, 'All products navigation missing'
+          assert Path('products/media/editorial/cover.webp').is_file()
+          assert catalogue_file.is_file(), 'All products listing is missing'
+          listing=catalogue_file.read_text()
+          assert 'All products' in listing and '<base href="/products/">' in listing
+          assert '<section class="cover">' not in listing, 'Cover and listing routes mixed'
+          print('PASS: Curated Products cover and separate All Products listing preserved')
+          PY
       - name: Strict full-site audit of links, canons and undated downloads
         run: python3 scripts/audit_site_integrity.py --strict
       - name: Verify project deep-link routing and shared JavaScript syntax
