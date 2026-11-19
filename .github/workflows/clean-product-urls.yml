@@ -49,6 +49,25 @@ jobs:
         run: python3 scripts/normalize_public_site.py
       - name: Strict full-site audit of links, canons and undated downloads
         run: python3 scripts/audit_site_integrity.py --strict
+      - name: Verify project deep-link routing and shared JavaScript syntax
+        run: |
+          node --check projects/projects.js
+          node --check products/collection.js
+          node --check app.js
+          python3 - <<'PY'
+          from pathlib import Path
+          import re,json
+          root=Path('projects')
+          p=json.loads(re.search(r'<script[^>]*id=["\x27]project-data["\x27][^>]*>([\s\S]*?)</script>',(root/'index.html').read_text()).group(1))
+          pages=list(root.glob('*/index.html'))
+          assert len(pages)==len(p),(len(pages),len(p))
+          for page in pages:
+              html=page.read_text()
+              url='https://omegaluxstudio.com/projects/'+page.parent.name+'/'
+              assert '<base href="/projects/">' in html
+              assert '<link rel="canonical" href="'+url+'">' in html
+          print('PASS: Project deep-link pages and JavaScript syntax validated')
+          PY
       - name: Validate Vein Globe direct URL and shared assets
         run: |
           python3 - <<'PY'
