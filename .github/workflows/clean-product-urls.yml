@@ -4,6 +4,11 @@ on:
     paths:
       - 'products/**'
       - 'scripts/build_clean_product_urls.py'
+      - 'scripts/build_clean_content_urls.py'
+      - 'lighting-guide/**'
+      - 'blog/**'
+      - 'manuals.js'
+      - 'recommendations.js'
       - '.github/workflows/clean-product-urls.yml'
   push:
     branches: [main]
@@ -23,6 +28,8 @@ jobs:
       - uses: actions/configure-pages@v5
       - name: Generate real folder pages
         run: python3 scripts/build_clean_product_urls.py
+      - name: Generate clean Lighting Guide and Blog URLs
+        run: python3 scripts/build_clean_content_urls.py
       - name: Validate Vein Globe direct URL and shared assets
         run: |
           python3 - <<'PY'
