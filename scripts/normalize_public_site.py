@@ -11,7 +11,7 @@ import xml.etree.ElementTree as ET
 from collections import Counter
 
 ROOT=Path(__file__).resolve().parents[1]
-HOST='https://omegaluxstudio.com'
+HOST='https://www.omegaluxstudio.com'
 PRODUCTS=ROOT/'products'
 CATEGORY={'table':'table-lamps','pendant':'pendants','chandelier':'chandeliers',
           'wall':'wall-lights','floor':'floor-lamps','dining':'above-the-table',

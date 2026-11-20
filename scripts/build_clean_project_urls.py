@@ -20,7 +20,7 @@ for p in projects:
     route=f'/projects/{key}/'
     page=original.replace('<head>','<head><base href="/projects/">',1)
     page=re.sub(r'<title>[\s\S]*?</title>',f'<title>{html.escape(p["title"])} – Projects – OMEGALUX Studio</title>',page,count=1,flags=re.I)
-    page=re.sub(r'<link\s+rel=["\x27]canonical["\x27][^>]*>',f'<link rel="canonical" href="https://omegaluxstudio.com{route}">',page,count=1,flags=re.I)
+    page=re.sub(r'<link\s+rel=["\x27]canonical["\x27][^>]*>',f'<link rel="canonical" href="https://www.omegaluxstudio.com{route}">',page,count=1,flags=re.I)
     dest=folder/key/'index.html'
     dest.parent.mkdir(parents=True,exist_ok=True)
     dest.write_text(page,encoding='utf-8')
