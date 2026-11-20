@@ -21,6 +21,11 @@ for p in projects:
     page=original.replace('<head>','<head><base href="/projects/">',1)
     page=re.sub(r'<title>[\s\S]*?</title>',f'<title>{html.escape(p["title"])} – Projects – OMEGALUX Studio</title>',page,count=1,flags=re.I)
     page=re.sub(r'<link\s+rel=["\x27]canonical["\x27][^>]*>',f'<link rel="canonical" href="https://www.omegaluxstudio.com{route}">',page,count=1,flags=re.I)
+    description = p.get('desc', '').strip()
+    if description:
+        summary = re.split(r'(?<=[.!?])\s+', description, maxsplit=1)[0]
+        tag = '<meta name="description" content="' + html.escape(summary, quote=True) + '">'
+        page = re.sub(r'<meta name="description"[^>]*>', lambda _: tag, page, count=1)
     dest=folder/key/'index.html'
     dest.parent.mkdir(parents=True,exist_ok=True)
     dest.write_text(page,encoding='utf-8')

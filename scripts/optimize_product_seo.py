@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Add search metadata to the existing lighting catalogue without changing its UI.
 
-This tool touches ONLY the HTML <head>. It never modifies <body>, image tags,
+Only HTML heads and crawlable image copies and their sitemap are written. It never modifies <body>, image tags,
 CSS, JavaScript, layout, product codes, route slugs, or quotation controls.
 Run after the canonical URL normalization step during GitHub Pages builds.
 """
@@ -9,6 +9,10 @@ from __future__ import annotations
 
 from html import escape, unescape
 from pathlib import Path
+import base64
+import unicodedata
+from urllib.parse import unquote, urljoin, urlsplit
+import xml.etree.ElementTree as ET
 import json
 import re
 
@@ -79,20 +83,78 @@ def trim(s: str, max_len: int) -> str:
     return s[:max_len - 1].rsplit(' ', 1)[0].rstrip(' ,.;:') + '…'
 
 
-def first_image(document: str) -> str | None:
-    # Existing local product photograph only. Do not synthesize images or use
-    # inline base64 / diagrams as Google search image URLs.
-    for tag in IMG.findall(document):
-        m = SRC.search(tag)
-        if not m:
-            continue
-        src = unescape(m.group(1))
-        if not src.startswith("media/editorial/"):
-            continue
-        candidate = PRODUCTS / src
-        if candidate.is_file() and candidate.suffix.lower() in {".webp", ".jpg", ".jpeg", ".png"}:
-            return HOST + "/products/" + src
-    return None
+SITEMAPS = "http://www.sitemaps.org/schemas/sitemap/0.9"
+IMAGES = "http://www.google.com/schemas/sitemap-image/1.1"
+IMG_SRC = re.compile(r'<img\b[^>]*?\ssrc="([^"]+)"', re.I)
+
+
+def image_url(src, base, filename):
+    if src.startswith("data:image/webp;base64,"):
+        data = base64.b64decode(src.partition(",")[2], validate=True)
+        if data[:4] != b"RIFF" or data[8:12] != b"WEBP":
+            raise ValueError(f"Invalid WebP gallery image for {filename}")
+        dest = ROOT / "assets" / "search-images" / filename
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        if not dest.exists() or dest.read_bytes() != data:
+            dest.write_bytes(data)
+        return f"{HOST}/assets/search-images/{filename}"
+    url = urlsplit(urljoin(HOST + base, unescape(src)))
+    path = ROOT / unquote(url.path).lstrip("/")
+    if url.netloc != urlsplit(HOST).netloc or not path.is_file():
+        raise ValueError(f"Missing local image for {filename}")
+    return HOST + url.path
+
+
+def product_images(document, folder, slug):
+    gallery = re.search(r'<div class="picture-pair\b[^"]*">(.*?)</div>', document, re.S)
+    if not gallery:
+        raise ValueError(f"Missing product gallery on {slug}")
+    return [image_url(src, "/products/", f"{folder}-{slug}-{n}.webp")
+            for n, src in enumerate(IMG_SRC.findall(gallery[1]), 1)]
+
+
+def write_image_sitemap():
+    entries = {}
+    for path in sorted((ROOT / "products").glob("*/*/index.html")):
+        document = path.read_text(encoding="utf-8")
+        schema = json.loads(re.search(r'<script type="application/ld\+json" data-ol-seo="1">(.*?)</script>', document, re.S)[1])
+        entries[schema["url"]] = schema["image"]
+
+    for path in sorted((ROOT / "blog").glob("*/index.html")):
+        document = path.read_text(encoding="utf-8")
+        imgs = [src for src in IMG_SRC.findall(document)
+                if "assets/journal/" in src or src.startswith("data:image/webp;base64,")]
+        if imgs:
+            entries[f"{HOST}/blog/{path.parent.name}/"] = [
+                image_url(src, "/", f"article-{path.parent.name}-{n}.webp")
+                for n, src in enumerate(dict.fromkeys(imgs), 1)
+            ]
+
+    project_page = (ROOT / "projects/index.html").read_text(encoding="utf-8")
+    projects = json.loads(re.search(r'<script id="project-data" type="application/json">(.*?)</script>', project_page, re.S)[1])
+    for project in projects:
+        title = unicodedata.normalize("NFKD", project["title"]).encode("ascii", "ignore").decode()
+        slug = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
+        sources = [project["heroImg"]]
+        sources.extend(view["render"] for area in project["areas"] for view in area["views"] if view.get("render"))
+        entries[f"{HOST}/projects/{slug}/"] = [
+            image_url(src, "/projects/", f"project-{slug}-{n}.webp")
+            for n, src in enumerate(dict.fromkeys(sources), 1)
+        ]
+
+    ET.register_namespace("", SITEMAPS)
+    ET.register_namespace("image", IMAGES)
+    root = ET.Element(f"{{{SITEMAPS}}}urlset")
+    for page, images in sorted(entries.items()):
+        if not images or not (ROOT / urlsplit(page).path.lstrip("/") / "index.html").is_file():
+            raise ValueError(f"Invalid image sitemap entry for {page}")
+        url = ET.SubElement(root, f"{{{SITEMAPS}}}url")
+        ET.SubElement(url, f"{{{SITEMAPS}}}loc").text = page
+        for photo in dict.fromkeys(images):
+            img = ET.SubElement(url, f"{{{IMAGES}}}image")
+            ET.SubElement(img, f"{{{IMAGES}}}loc").text = photo
+    ET.indent(root, space="  ")
+    ET.ElementTree(root).write(ROOT / "sitemap-images.xml", encoding="utf-8", xml_declaration=True)
 
 
 def identify_product(document: str, folder: str, product_slug: str) -> tuple[str, str, dict] | None:
@@ -142,9 +204,7 @@ def identify_product(document: str, folder: str, product_slug: str) -> tuple[str
             "name": "Dimensions",
             "value": str(variant["dimensions"]),
         }]
-    photo = first_image(document)
-    if photo:
-        schema["image"] = photo
+    schema["image"] = product_images(document, folder, product_slug)
     # Intentionally no Offer, price, GTIN, manufacturer, or invented brand.
     return title, meta, schema
 
@@ -211,4 +271,5 @@ if __name__ == "__main__":
         paths += sorted((PRODUCTS / family).glob("*/index.html"))
     paths = list(dict.fromkeys(paths))
     count = sum(update_page(path) for path in paths)
+    write_image_sitemap()
     print(f"SEO metadata applied to {count} of {len(paths)} existing catalogue pages. All bodies and product images preserved.")
