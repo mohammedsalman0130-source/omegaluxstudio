@@ -95,7 +95,7 @@ def first_image(document: str) -> str | None:
     return None
 
 
-def identify_product(document: str, folder: str) -> tuple[str, str, dict] | None:
+def identify_product(document: str, folder: str, product_slug: str) -> tuple[str, str, dict] | None:
     data_match = DATA.search(document)
     if not data_match:
         return None
@@ -130,7 +130,7 @@ def identify_product(document: str, folder: str) -> tuple[str, str, dict] | None
         "name": name,
         "description": description or f"{name} {category}",
         "category": category,
-        "url": HOST + f"/products/{folder}/" + Path(path).parent.name + "/",
+        "url": HOST + f"/products/{folder}/{product_slug}/",
     }
     if ref:
         schema["sku"] = ref
@@ -162,7 +162,7 @@ def update_page(path: Path) -> bool:
         schema = None
     elif len(relative) == 3 and relative[0] in PRODUCT_TYPES and relative[2] == "index.html":
         source = path.read_text(encoding="utf-8")
-        product = identify_product(source, relative[0])
+        product = identify_product(source, relative[0], relative[1])
         if not product:
             raise AssertionError("Cannot find product data: " + str(path))
         title, meta, schema = product
@@ -195,7 +195,7 @@ def update_page(path: Path) -> bool:
     updated = source[:head_match.start()] + prefix + inner + tags + closing + source[head_match.end():]
 
     # Explicit protection of what the user asked to preserve.
-    assert source[head_match.end():] == updated[updated.index(closing, head_match.start()) + len(closing):], (
+    assert source[head_match.end():] == updated[HEAD.search(updated).end():], (
         "Body/image/layout changes prohibited: " + str(path)
     )
     if updated != source:
