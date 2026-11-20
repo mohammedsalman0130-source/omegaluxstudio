@@ -37,9 +37,9 @@ for file in html_files:
         hits=' '.join(visible[max(0,d.start()-45):d.end()+45].split())
         dates.append((rel,d.group(0),hits[:145]))
     if rel.endswith('index.html'):
-        expected='https://omegaluxstudio.com/'+rel.removesuffix('index.html')
+        expected='https://www.omegaluxstudio.com/'+rel.removesuffix('index.html')
         c=canonical.search(s)
-        if c and c.group(2).replace('www.','')!=expected: badcanon.append((rel,c.group(2),expected))
+        if c and c.group(2)!=expected: badcanon.append((rel,c.group(2),expected))
 for pdf in sorted((ROOT/'articles').glob('*.pdf')):
     try:
         r=subprocess.run(['pdftotext','-layout',str(pdf),'-'],capture_output=True,check=True,text=True)
