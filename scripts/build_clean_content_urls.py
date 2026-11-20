@@ -10,7 +10,7 @@ from html import escape
 from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
-DOMAIN = "https://omegaluxstudio.com"
+DOMAIN = "https://www.omegaluxstudio.com"
 GUIDES = {
     "sll": ("sll-code-2022", "SLL Code for Lighting 2022"),
     "lg4": ("sll-lg4-2006", "SLL LG4 Sports Lighting 2006"),
