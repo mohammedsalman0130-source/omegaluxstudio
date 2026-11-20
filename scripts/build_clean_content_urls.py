@@ -16,6 +16,9 @@ GUIDES = {
     "lg4": ("sll-lg4-2006", "SLL LG4 Sports Lighting 2006"),
     "adm": ("adm-september-2020", "Abu Dhabi Lighting Manual September 2020"),
 }
+GUIDE_SEO = {"sll":{"path":"lighting-guide/sll-code-2022/index.html","description":"SLL Code for Lighting 2022 indoor lighting reference: explore task areas, recommended illuminance, uniformity and practical lighting planning for UAE projects.","h1":"<h1>SLL Code for Lighting<br><em>Indoor lighting references.</em></h1>","p":"<p>Explore indoor task lighting guidance by space and activity, including recommended maintained illuminance and uniformity. Use the SLL reference selector and comparison tools to review design targets for UAE residential, hospitality and commercial projects.</p>"},"lg4":{"path":"lighting-guide/sll-lg4-2006/index.html","description":"SLL Lighting Guide 4 sports lighting reference: find sports areas and lighting guidance for pitches, halls, courts and recreational spaces.","h1":"<h1>SLL Lighting Guide 4<br><em>Sports lighting references.</em></h1>","p":"<p>Explore sports lighting categories for indoor and outdoor activities, including courts, halls and playing areas. Review appropriate illuminance and uniformity guidance before coordinating your lighting scheme and calculations.</p>"},"adm":{"path":"lighting-guide/adm-september-2020/index.html","description":"Abu Dhabi Lighting Manual reference for external lighting applications, including roads, parking areas and tunnels in UAE projects.","h1":"<h1>Abu Dhabi Lighting Manual<br><em>Exterior lighting references.</em></h1>","p":"<p>Explore Abu Dhabi exterior lighting reference categories covering roads, parking areas and tunnels. Review the relevant lighting guidance for the application before developing and checking your technical lighting design.</p>"}}
+SHARED_GUIDE_META = "content=\"Explore SLL 2022 indoor task lighting, SLL LG4 2006 sports lighting and ADM September 2020 road, parking and tunnel references.\""
+SHARED_GUIDE_HERO = "<h1>The right light.<br><em>Starts with the right numbers.</em></h1><p>Choose your reference, then find the space you are designing.<br>Indoor tasks, sports facilities and Abu Dhabi exterior lighting.</p>"
 CANONICAL_RE = re.compile(r'<link\s+rel=["\x27]canonical["\x27][^>]*>', re.I)
 URL_ATTR = re.compile(r'((?:href|action)\s*=\s*["\x27])([^"\x27]+)(["\x27])', re.I)
 ARTICLE_RE = re.compile(r'^/?([a-z0-9][a-z0-9-]*)\.html$', re.I)
@@ -51,6 +54,10 @@ for key, (slug, title) in GUIDES.items():
     route = "/lighting-guide/" + slug + "/"
     page = canonical(guide_source, DOMAIN + route)
     page = replace_title(page, title + " – OMEGALUX Studio")
+    seo = GUIDE_SEO[key]
+    assert SHARED_GUIDE_META in page and SHARED_GUIDE_HERO in page, 'Guide source template changed unexpectedly'
+    page = page.replace(SHARED_GUIDE_META, 'content="' + escape(seo['description'], quote=True) + '"', 1)
+    page = page.replace(SHARED_GUIDE_HERO, seo['h1'] + seo['p'], 1)
     target = ROOT / "lighting-guide" / slug / "index.html"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(page, encoding="utf-8")
