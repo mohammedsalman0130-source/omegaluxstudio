@@ -28,12 +28,34 @@ function alignStudioFooter(){
   const footer=document.querySelector('footer');
   if(!footer)return;
   footer.classList.add('studio-site-footer');
-  footer.innerHTML="<a class=\"brand original-brand\" href=\"/\" aria-label=\"OMEGALUX Studio home\"><img src=\"/assets/studio-logo.png\" width=\"1698\" height=\"926\" alt=\"OMEGALUX Studio — copper and silver logo\"></a><div class=\"footer-contact\"><p>Lighting design. Lighting supply. Considered together.</p><a href=\"mailto:info@omegaluxstudio.com\">info@omegaluxstudio.com</a><a href=\"mailto:design@omegaluxstudio.com\">design@omegaluxstudio.com</a><a href=\"tel:+971581178675\">+971 58 117 8675</a><span>Abu Dhabi, United Arab Emirates</span><a href=\"https://omegaluxstudio.com/\">www.omegaluxstudio.com</a></div><span>© OMEGALUX Studio</span>";
+  footer.innerHTML="<a class=\"brand original-brand\" href=\"/\" aria-label=\"OMEGALUX Studio home\"><img src=\"/assets/studio-logo.png\" width=\"1698\" height=\"926\" alt=\"OMEGALUX Studio — copper and silver logo\"></a><div class=\"footer-contact\"><p>Lighting design. Lighting supply. Considered together.</p><a href=\"mailto:info@omegaluxstudio.com\">info@omegaluxstudio.com</a><a href=\"mailto:design@omegaluxstudio.com\">design@omegaluxstudio.com</a><a href=\"tel:+971581178675\">+971 58 117 8675</a><span>Abu Dhabi, United Arab Emirates</span><a href=\"https://omegaluxstudio.com/\">www.omegaluxstudio.com</a><a href=\\\"/site-map/\\\">Site map</a></div><span>© OMEGALUX Studio</span>";
 }
 alignStudioFooter();
 const element = id => document.getElementById(id);
 const payload = element('page-data');
 const data = payload ? JSON.parse(payload.textContent) : null;
+// Add a breadcrumb graph to real product detail pages without changing visual content.
+// Product details, names, and category URLs come from the current page itself.
+(function addProductBreadcrumbSchema(){
+  if(document.body?.dataset.page!=='product')return;
+  const crumb=document.querySelector('p.crumb');
+  if(!crumb)return;
+  const anchors=[...crumb.querySelectorAll('a[href]')];
+  const entries=anchors.map((a,i)=>({
+    '@type':'ListItem',position:i+1,name:a.textContent.trim(),
+    item:new URL(a.getAttribute('href'),location.origin).href
+  }));
+  const name=(data?.name||document.querySelector('h1')?.textContent||'').trim();
+  if(!name)return;
+  entries.push({'@type':'ListItem',position:entries.length+1,name,item:location.origin+location.pathname});
+  if(entries.length<2)return;
+  const script=document.createElement('script');
+  script.type='application/ld+json';
+  script.dataset.olBreadcrumbs='1';
+  script.textContent=JSON.stringify({'@context':'https://schema.org','@type':'BreadcrumbList',itemListElement:entries});
+  document.head.appendChild(script);
+})();
+
 
 // Keep legacy catalogue filenames functional, but expose the actual category/product
 // folder path in the address bar. A base tag preserves existing relative image,
