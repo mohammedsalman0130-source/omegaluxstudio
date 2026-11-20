@@ -2,3 +2,7 @@ User-agent: *
 Allow: /
 Sitemap: https://www.omegaluxstudio.com/sitemap.xml
 Sitemap: https://www.omegaluxstudio.com/sitemap-images.xml
+Sitemap: https://www.omegaluxstudio.com/sitemap-products.xml
+Sitemap: https://www.omegaluxstudio.com/sitemap-projects.xml
+Sitemap: https://www.omegaluxstudio.com/sitemap-articles.xml
+Sitemap: https://www.omegaluxstudio.com/sitemap-lighting-guide.xml
