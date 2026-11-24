@@ -72,6 +72,7 @@ def normalize(html):
         if not route:
             return m.group(0)
         return prefix + route + ("?" + query if query_sep else "") + ("#" + extra if sep else "") + suffix
+    html = re.sub(r'(?: · )?<a href="/site-map/">Site map</a>', "", html)
     return LINK_RE.sub(rewrite, html)
 for original, source in sources.items():
     route = urls[original.name]
