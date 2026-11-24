@@ -53,7 +53,7 @@ CATEGORY = {
         "Dining table lighting",
     ),
     "all-products": (
-        "Alabaster Lighting Collection UAE | OMEGALUX Studio",
+        "All Alabaster Lighting Products UAE | OMEGALUX Studio",
         "Explore OMEGALUX Studio's alabaster table lamps, pendants, chandeliers, wall lights and floor lamps. Request a quotation for supply across the UAE.",
         "Alabaster lighting",
     ),
