@@ -179,12 +179,14 @@ def identify_product(document: str, folder: str, product_slug: str) -> tuple[str
 
     # Keep descriptive, location-focused snippets while preserving the original
     # product name and reference. No price or made-up availability claim.
-    prefix = f"{name} ({ref}): " if ref else f"{name}: "
+    prefix = f"{name} — {category} ({ref}): " if ref else f"{name} — {category}: "
     suffix = " Request a quotation for Abu Dhabi & Dubai, UAE."
     allowed = max(0, 157 - len(prefix) - len(suffix))
-    summary = trim(description, min(allowed, 78)) if allowed > 16 else category
-    meta = trim(prefix + summary.rstrip(".") + "." + suffix, 160)
-    title = trim(f"{name} {category.title()} | OMEGALUX Studio", 68)
+    summary = trim(description, min(allowed, 78)) if allowed > 16 else ""
+    meta = trim(prefix + summary.rstrip(".…") + "." + suffix, 160) if summary else trim(f"{name} {category}. {suffix.strip()}", 160)
+    title = f"{name} {category.title()} UAE | OMEGALUX Studio"
+    if len(title) > 72:
+        title = f"{name} {category.title()} | OMEGALUX Studio"
 
     schema = {
         "@context": "https://schema.org",
