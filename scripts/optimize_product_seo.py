@@ -137,6 +137,13 @@ def write_image_sitemap():
         slug = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
         sources = [project["heroImg"]]
         sources.extend(view["render"] for area in project["areas"] for view in area["views"] if view.get("render"))
+        # Keep the existing cover/render order (and inline WebP filenames).
+        # Include existing publicly displayed technical comparisons and site
+        # execution photos, but do not expose additional drawings or files.
+        sources.extend(view["map"] for area in project["areas"] for view in area["views"] if view.get("map"))
+        execution = project.get("execution") or {}
+        sources.extend(photo["src"] for photo in execution.get("images", []) if photo.get("src"))
+        sources.extend(video["poster"] for video in execution.get("videos", []) if video.get("poster"))
         entries[f"{HOST}/projects/{slug}/"] = [
             image_url(src, "/projects/", f"project-{slug}-{n}.webp")
             for n, src in enumerate(dict.fromkeys(sources), 1)
