@@ -2,6 +2,7 @@
 """Build direct, refreshable, canonical URLs for every Projects detail view."""
 from pathlib import Path
 import json, html, re, unicodedata
+from optimize_product_seo import image_url
 root=Path(__file__).resolve().parents[1]
 folder=root/'projects'
 original=(folder/'index.html').read_text(encoding='utf-8')
@@ -47,6 +48,40 @@ for p in projects:
                '<h2>Lighting approach</h2><p>' + esc(description) + '</p>' +
                ('<h2>Areas studied</h2><p>' + esc(areas) + '</p>' if areas else '') +
                '<p><a href="/services/lighting-design-supply/">Lighting design and supply services</a> · <a href="/projects/">All projects</a></p></section>')
+    # Reuse existing sitemap image URLs, including byte-identical WebP copies
+    # of inline gallery images. Never rename or replace an existing asset.
+    sources = [p["heroImg"]] + [
+        v["render"] for a in p["areas"] for v in a["views"] if v.get("render")
+    ]
+    urls = {src: image_url(src, "/projects/", f"project-{key}-{n}.webp")
+            for n, src in enumerate(dict.fromkeys(sources), 1)}
+    def image_tag(src, alt, hero=False):
+        loading = 'fetchpriority="high"' if hero else 'loading="lazy"'
+        return f'<img {loading} src="{esc(urls[src])}" alt="{esc(alt)}">'
+    # These are actual existing project pictures, visible without JS, not
+    # hidden keyword content. The original interactive renderer replaces
+    # this fallback on load and retains all existing gallery interactions.
+    hero_alt = f'{p["title"]} — {p.get("subtitle") or "lighting project"}'
+    initial = ('<div class="hero">' + image_tag(p["heroImg"], hero_alt, True) +
+               '<div class="heroCopy"><div class="eyebrow">' + esc(p.get("category", "")) +
+               '</div><h1>' + esc(p["title"]) + '</h1><p>' + esc(p.get("subtitle", "")) +
+               '</p></div></div>' + initial.replace('<h1>' + esc(p["title"]) + '</h1>', '', 1))
+    cards = []
+    for area in p["areas"]:
+        views = []
+        for v in area["views"]:
+            if not v.get("render"):
+                continue
+            alt = f'{p["title"]} — {area["name"]}: {v["title"]} — project lighting visual'
+            views.append('<div><div class="viewThumb">' + image_tag(v["render"], alt) +
+                         '</div><div class="viewLabel">' + esc(v["title"]) + '</div></div>')
+        cards.append('<article class="area"><div class="areaTitle"><h3>' + esc(area["name"]) +
+                     '</h3></div>' + ''.join(views) + '</article>')
+    initial += ('<section class="sections"><div class="sectionHead"><h2>Lighting concepts</h2>'
+                '<span>Area by area · project visuals</span></div><div class="areas">' +
+                ''.join(cards) + '</div></section>')
+    # Preserve the existing base URL, which already appears on the listing.
+    page = page.replace('<base href="/projects/"><base href="/projects/">', '<base href="/projects/">', 1)
     page=page.replace('<section class="listing" id="listing">', '<section class="listing hidden" id="listing">', 1)
     page=page.replace('<section class="detail" id="detail"></section>', '<section class="detail active" id="detail">' + initial + '</section>', 1)
     dest=folder/key/'index.html'
