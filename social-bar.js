@@ -77,3 +77,59 @@
     attachPanel();
   }
 })();
+
+
+/* OMEGALUX Studio — GA4 measurement only. No UI changes. */
+(() => {
+  'use strict';
+  if (window.__olGA4 || !/^(www\.)?omegaluxstudio\.com$/i.test(location.hostname)) return;
+  window.__olGA4 = true;
+  const measurementId = 'G-4YXWHXFE62';
+  try {
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = window.gtag || function(){ window.dataLayer.push(arguments); };
+    // The homepage already configures GA4. Do not send a second initial page view.
+    const configured = window.dataLayer.some(item => item && item[0] === 'config' && item[1] === measurementId);
+    if (!configured) {
+      window.gtag('js', new Date());
+      window.gtag('config', measurementId);
+    }
+    if (!Array.from(document.scripts).some(s => s.src.includes('googletagmanager.com/gtag/js?id=' + measurementId))) {
+      const tag = document.createElement('script');
+      tag.async = true;
+      tag.src = 'https://www.googletagmanager.com/gtag/js?id=' + measurementId;
+      document.head.appendChild(tag);
+    }
+    // GA4 enhanced measurement already tracks browser history changes.
+    // Do not patch history or manually duplicate page views.
+    const track = (name) => {
+      try { window.gtag('event', name, {page_path: location.pathname, send_to: measurementId}); } catch (_) {}
+    };
+    document.addEventListener('click', event => {
+      try {
+        const link = event.target instanceof Element ? event.target.closest('a[href]') : null;
+        if (!link) return;
+        const raw = link.getAttribute('href') || '';
+        if (link.matches('.product-download-link')) {
+          if (link.dataset.busy !== 'true') track('technical_specification_request');
+          return;
+        }
+        if (/^mailto:/i.test(raw)) { track('email_enquiry_click'); return; }
+        if (/^tel:/i.test(raw)) { track('phone_enquiry_click'); return; }
+        const url = new URL(raw, location.href);
+        if (['wa.me','api.whatsapp.com','web.whatsapp.com'].includes(url.hostname)) { track('whatsapp_enquiry_click'); return; }
+        if (url.origin === location.origin && url.hash === '#enquire' && link.matches('.product-info .solid')) {
+          track('quotation_request_click');
+          return;
+        }
+        if (url.origin === location.origin && /\.(pdf|xlsx|dwg|dxf)$/i.test(url.pathname)) track('document_download_click');
+      } catch (_) {}
+    }, {capture:true, passive:true});
+    // Existing form composes an email, not a confirmed lead. No field values are sent.
+    document.addEventListener('submit', event => {
+      if (event.target instanceof HTMLFormElement && event.target.id === 'enquiry') track('enquiry_email_intent');
+    }, {capture:true, passive:true});
+  } catch (_) {
+    // Analytics must never interfere with navigation or contact actions.
+  }
+})();
